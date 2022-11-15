@@ -1,0 +1,57 @@
+body{
+    background-color:#6699CC;  
+  }
+  h1{
+      color:#2e79c0;
+  }
+  h2{
+      
+  }
+  #site-name{
+      color:white; 
+      text-decoration-color:white;
+      background-color: white;
+  }
+  .site_header{
+      color:white;
+  }
+  #branding h1{
+      color:white;
+  }
+  #header {
+      width: auto;
+      height: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+      background: #2a81ca;
+      color: white;
+      text-decoration-color: white;
+      overflow: hidden;
+  }
+  .module {
+      border: none;
+      margin-bottom: 30px;
+      background: white;
+      color: #2a81ca;
+      opacity:1.0;
+  }
+  .module blockquote {
+      margin-left: 12px;
+  }
+  .module ul, .module ol {
+      margin-left: 1.5em;
+  }
+  .module h3 {
+      margin-top: .6em;
+  }
+  .module h2, .module caption, .inline-group h2 {
+      margin: 0;
+      padding: 8px;
+      font-weight: 400;
+      font-size: 13px;
+      text-align: left;
+      background: #2e79c0;
+      color: #2e79c0;
+  }
