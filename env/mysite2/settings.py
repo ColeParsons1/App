@@ -25,7 +25,7 @@ SECRET_KEY = '4tua0um*_4(lzuz($o@chs0rm9m)6_9#9_f$$xzp=x(3g6y5i1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['146.190.222.176']
 
 REST_FRAMEWORK = {
     'DATETIME_FORMAT': "%m-%d-%Y | %H:%M",
@@ -64,7 +64,7 @@ TINYMCE_DEFAULT_CONFIG = {
 
 INSTALLED_APPS = [
       # this must be BEFORE 'admin_tools' and 'django.contrib.admin' 'admin_tools_stats',
-    #'django_nvd3',
+    'django_nvd3',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
