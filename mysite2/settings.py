@@ -25,7 +25,7 @@ SECRET_KEY = '4tua0um*_4(lzuz($o@chs0rm9m)6_9#9_f$$xzp=x(3g6y5i1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['146.190.222.176']
 
 REST_FRAMEWORK = {
     'DATETIME_FORMAT': "%m-%d-%Y | %H:%M",
@@ -128,13 +128,24 @@ WSGI_APPLICATION = 'mysite2.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
+if DEBUG:
+    DATABASES = {
+        'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'Lug',
+        'USER': 'Lug_cole',
+        'PASSWORD': 'Boldandbrash1!',
+        'HOST': 'localhost',
+        'PORT': '',
+        }
+    }
 
 
 # Password validation
