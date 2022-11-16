@@ -64,7 +64,7 @@ TINYMCE_DEFAULT_CONFIG = {
 
 INSTALLED_APPS = [
       # this must be BEFORE 'admin_tools' and 'django.contrib.admin' 'admin_tools_stats',
-    'django_nvd3',
+    #'django_nvd3',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
