@@ -1052,7 +1052,7 @@ class ProfileViewSet(APIView):
     serializer = ProfileSerializer(queryset, many=True)
     #permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
-        Profiles = Profile.objects.filter(user=request.user.username)
+        Profiles = Profile.objects.filter(username=request.user.username)
         serializer = ProfileSerializer(Profiles, many=True)
         return Response(serializer.data)
 
