@@ -1,13 +1,17 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import update_last_login
 from django.contrib.auth.hashers import check_password
+from django.conf import settings
+from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.http import JsonResponse
 import json
+from django.contrib import messages
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
 from django.db.models import Q
 from django.template import loader
@@ -138,9 +142,9 @@ def about(request):
     return render(request, 'main/about.html')    
 
 
-def login(request):
+#def login(request):
     
-    return render(request, 'main/login.html')    
+    #return render(request, 'main/login.html')    
 
     
 def signup(request):
@@ -915,6 +919,52 @@ def assignJob(job_id, user):
     }
     return HttpResponse(template.render(context))
 
+def login_request(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect("main:homepage")
+            else:
+                messages.error(request,"Invalid username or password.")
+        else:
+            messages.error(request,"Invalid username or password.")
+    form = AuthenticationForm()
+    return render(request=request, template_name="main/login.html", context={"login_form":form})    
+
+
+permission_classes = [permissions.AllowAny]            
+@method_decorator(csrf_exempt, name='post')
+class Login2ViewSet(APIView):
+    permission_classes = [permissions.AllowAny]
+    @csrf_exempt
+    def post(self, request):
+        #permission_classes = [permissions.IsAuthenticated]
+        serializer = LoginSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.validate(data=request.data)
+        if request.method == "POST":
+            form = AuthenticationForm(request, data=request.data)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect("main:homepage")
+            else:
+                messages.error(request,"Invalid username or password.")
+        else:
+            messages.error(request,"Invalid username or password.")
+        form = AuthenticationForm()
+        return render(request=request, template_name="main/login.html", context={"login_form":form})  
+    
        
 permission_classes = [permissions.AllowAny]            
 @method_decorator(csrf_exempt, name='post')
@@ -943,9 +993,6 @@ class LoginViewSet(APIView):
         pp.pprint(request.user)
         user_logged_in.send(sender=user.__class__, request=request, user=user) 
         return HttpResponseRedirect('/profiles/')
-
-    def log_in_success(request):
-        return HttpResponse("%s has logged in!" % request.user)    
 
         
     def get(self, request):
