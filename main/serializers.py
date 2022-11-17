@@ -73,6 +73,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 		'user',
 		'location',
 		'birth_date',
+		'Account_Type',
 		'Profile_Picture',	
 		)           
 
