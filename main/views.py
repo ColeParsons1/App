@@ -939,10 +939,9 @@ def login_request(request):
 
 
 permission_classes = [permissions.AllowAny]            
-@method_decorator(csrf_exempt, name='login')
+@method_decorator(csrf_exempt, name='post')
 class Login2ViewSet(APIView):
     permission_classes = [permissions.AllowAny]
-    @csrf_exempt
     def post(self, request):
         #permission_classes = [permissions.IsAuthenticated]
         serializer = LoginSerializer(data=request.data, context={'request': request})
