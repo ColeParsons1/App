@@ -38,6 +38,7 @@ urlpatterns = [
     path('jobs/', views.JobViewSet.as_view()),
     path('myjobs/', views.MyJobViewSet.as_view()),
     path('groups/', views.GroupViewSet.as_view()),
+    path('login2/', views.LoginViewSet.as_view()),
     path('login/', views.LoginViewSet.as_view()),
     path('register/', views.SignupViewSet.as_view()),
     path('profiles/', views.ProfileViewSet.as_view()),
