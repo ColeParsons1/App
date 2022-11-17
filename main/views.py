@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import update_last_login
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponse
@@ -940,8 +941,10 @@ class LoginViewSet(APIView):
         user.is_active = True
         request.user = user
         pp.pprint(request.user)
+        login(request.user)
+        update_last_login(None, request.user)
         user_logged_in.send(sender=user.__class__, request=request, user=user) 
-        return Response({"status": status.HTTP_200_OK, "Token": token})
+        return request.user
 
         
     def get(self, request):
@@ -1162,7 +1165,22 @@ class TopicViewSet(APIView):
     def get(self, request):
         topics = Topic.objects.all()
         serializer = TopicSerializer(topics, many=True)
-        return Response(serializer.data)		
+        return Response(serializer.data)
+
+class ProfileBackend(object):
+
+    def authenticate(self, username=None, password=None):
+        stud = Profile.objects.filter(username=username)
+        if stud.exists():
+            if check_password(password, stud[0].password):
+                return stud[0]
+        return None
+    def get_user(self, username):
+        prof = Profile.objects.filter(username=username)
+        if prof.exists():
+            return prof[0]
+        else:
+            return None        	
 
 #Content = form.save(commit=False)
         #Content.Author = request.user
