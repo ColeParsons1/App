@@ -942,7 +942,7 @@ class LoginViewSet(APIView):
         request.user = user
         pp.pprint(request.user)
         user_logged_in.send(sender=user.__class__, request=request, user=user) 
-        return HttpResponseRedirect('/log_in_success/')
+        return HttpResponseRedirect('/profiles/')
 
     def log_in_success(request):
         return HttpResponse("%s has logged in!" % request.user)    
