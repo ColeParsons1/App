@@ -978,7 +978,7 @@ class LoginViewSet(APIView):
         password = request.data.get('password')	
         user = authenticate(username=username, password=password)
         pp = pprint.PrettyPrinter(indent=4)
-        login(request)
+        login(request, user)
         update_last_login(None, user)
         pp.pprint("logged in")
         pp.pprint(user.pk)
