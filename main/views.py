@@ -948,22 +948,20 @@ class Login2ViewSet(APIView):
         serializer = LoginSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.validate(data=request.data)
-        if request.method == "POST":
-            form = AuthenticationForm(request, data=request.data)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+        if serializer.is_valid():
+            username = request.data.get('username')
+            password = request.data.get('password')
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
-                return redirect("main:homepage")
+                #return redirect("main:homepage")
             else:
                 messages.error(request,"Invalid username or password.")
         else:
             messages.error(request,"Invalid username or password.")
         form = AuthenticationForm()
-        return render(request=request, template_name="main/login.html", context={"login_form":form})  
+        return render(request=request)  
     
        
 permission_classes = [permissions.AllowAny]            
