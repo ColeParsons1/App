@@ -136,6 +136,9 @@ def inbox(request, username):
     }
     return HttpResponse(template.render(context, request)) 
 
+def signout(request):
+    logout(request, request.user)
+    return render(request, 'main/about.html') 
 
 def about(request):
     
