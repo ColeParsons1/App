@@ -915,10 +915,7 @@ def assignJob(job_id, user):
     }
     return HttpResponse(template.render(context))
 
-def log_in_success(request):
-    return HttpResponse("%s has logged in!" % request.user)       
-
-
+       
 permission_classes = [permissions.AllowAny]            
 @method_decorator(csrf_exempt, name='post')
 class LoginViewSet(APIView):
@@ -946,6 +943,9 @@ class LoginViewSet(APIView):
         pp.pprint(request.user)
         user_logged_in.send(sender=user.__class__, request=request, user=user) 
         return HttpResponseRedirect('/log_in_success/')
+
+    def log_in_success(request):
+        return HttpResponse("%s has logged in!" % request.user)    
 
         
     def get(self, request):
