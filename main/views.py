@@ -143,30 +143,30 @@ def login(request):
 
     
 def signup(request):
-	if request.method == 'POST':
-		form = sign(request.POST)
-		if form.is_valid():
-			user = form.save()
-			user.refresh_from_db()
-			#user.profile.birth_date = form.cleaned_data.get('birth_date')
-			user.is_staff = False
-			user.is_superuser = False
-			user.is_admin = False
-			user.save()
-			current_site = get_current_site(request)
-			subject = 'Activate Your Purefun Account'
-			message = render_to_string('main/account_activation_email.html', {
-				'user': user,
-				'domain': current_site.domain,
-				'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-				'token': account_activation_token.make_token(user),
-			})
-			login(request, user)
-			user.email_user(subject, message)
-			return render(request, 'main/account_activation_sent.html')
-	else:
-		form = sign()
-	return render(request, 'main/signup.html', {'form': form})
+    if request.method == 'POST':
+        form = sign(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db()
+            #user.profile.birth_date = form.cleaned_data.get('birth_date')
+            user.is_staff = False
+            user.is_superuser = False
+            user.is_admin = False
+            user.save()
+            current_site = get_current_site(request)
+            subject = 'Activate Your Purefun Account'
+            message = render_to_string('main/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            login(request, user)
+            user.email_user(subject, message)
+            return render(request, 'main/account_activation_sent.html')
+    else:
+        form = sign()
+    return render(request, 'main/signup.html', {'form': form})
 
 
 def activate(request, uidb64, token):
@@ -194,20 +194,20 @@ def account_activation_email(request):
     return render(request, 'activate')
 
 def activate(request, uidb64, token):
-	try:
-		uid = force_text(urlsafe_base64_decode(uidb64))
-		user = user.objects.get(pk=uid)
-	except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-		user = None
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = user.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
 
-	if user is not None and account_activation_token.check_token(user, token):
-		user.is_active = True
-		user.Profile.email_confirmed = True
-		user.save()
-		login(request, user)
-		return redirect('index')
-	else:
-		return render(request, 'main/account_activation_invalid.html')    
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.Profile.email_confirmed = True
+        user.save()
+        login(request, user)
+        return redirect('index')
+    else:
+        return render(request, 'main/account_activation_invalid.html')    
 
 
 def login_user(request):
@@ -826,48 +826,48 @@ REDIRECT_FIELD_NAME = 'next'
 LANGUAGE_SESSION_KEY = '_language'
 permission_classes = [permissions.AllowAny]
 def loginn(request, user, backend=None):
-	"""
-	Persist a user id and a backend in the request. This way a user doesn't
-	have to reauthenticate on every request. Note that data set during
-	the anonymous session is retained when the user logs in.
-	"""
-	session_auth_hash = ''
-	if user is None:
-		user = request.user
-	if hasattr(user, 'get_session_auth_hash'):
-		session_auth_hash = user.get_session_auth_hash()
+    """
+    Persist a user id and a backend in the request. This way a user doesn't
+    have to reauthenticate on every request. Note that data set during
+    the anonymous session is retained when the user logs in.
+    """
+    session_auth_hash = ''
+    if user is None:
+        user = request.user
+    if hasattr(user, 'get_session_auth_hash'):
+        session_auth_hash = user.get_session_auth_hash()
 
-	if SESSION_KEY in request.session:
-		if _get_user_session_key(request) != user.pk or (
-				session_auth_hash and
-				not constant_time_compare(request.session.get(HASH_SESSION_KEY, ''), session_auth_hash)):
-			# To avoid reusing another user's session, create a new, empty
-			# session if the existing session corresponds to a different
-			# authenticated user.
-			request.session.flush()
-	else:
-		request.session.cycle_key()
+    if SESSION_KEY in request.session:
+        if _get_user_session_key(request) != user.pk or (
+                session_auth_hash and
+                not constant_time_compare(request.session.get(HASH_SESSION_KEY, ''), session_auth_hash)):
+            # To avoid reusing another user's session, create a new, empty
+            # session if the existing session corresponds to a different
+            # authenticated user.
+            request.session.flush()
+    else:
+        request.session.cycle_key()
 
-	try:
-		backend = backend or user.backend
-	except AttributeError:
-		backends = _get_backends(return_tuples=True)
-		if len(backends) == 1:
-			_, backend = backends[0]
-		else:
-			raise ValueError(
-				'You have multiple authentication backends configured and '
-				'therefore must provide the `backend` argument or set the '
-				'`backend` attribute on the user.'
-			)
+    try:
+        backend = backend or user.backend
+    except AttributeError:
+        backends = _get_backends(return_tuples=True)
+        if len(backends) == 1:
+            _, backend = backends[0]
+        else:
+            raise ValueError(
+                'You have multiple authentication backends configured and '
+                'therefore must provide the `backend` argument or set the '
+                '`backend` attribute on the user.'
+            )
 
-	request.session[SESSION_KEY] = user.pk
-	request.session[BACKEND_SESSION_KEY] = backend
-	request.session[HASH_SESSION_KEY] = session_auth_hash
-	if hasattr(request, 'user'):
-		request.user = user
-	rotate_token(request)
-	user_logged_in.send(sender=user.__class__, request=request, user=user)        
+    request.session[SESSION_KEY] = user.pk
+    request.session[BACKEND_SESSION_KEY] = backend
+    request.session[HASH_SESSION_KEY] = session_auth_hash
+    if hasattr(request, 'user'):
+        request.user = user
+    rotate_token(request)
+    user_logged_in.send(sender=user.__class__, request=request, user=user)        
 
 
 def removeNotifications(request):
@@ -918,82 +918,83 @@ def assignJob(job_id, user):
 permission_classes = [permissions.AllowAny]            
 @method_decorator(csrf_exempt, name='post')
 class LoginViewSet(APIView):
-	permission_classes = [permissions.AllowAny]
-	@csrf_exempt
-	def post(self, request):
-		#permission_classes = [permissions.IsAuthenticated]
-		serializer = LoginSerializer(data=request.data, context={'request': request})
-		serializer.is_valid(raise_exception=True)
-		serializer.validate(data=request.data)
-		username = request.data.get('username')
-		password = request.data.get('password')	
-		user = authenticate(username=username, password=password)
-		pp = pprint.PrettyPrinter(indent=4)
-		login(request)
-		update_last_login(None, user)
-		pp.pprint("logged in")
-		pp.pprint(user.pk)
-		pp.pprint(username)
-		pp.pprint(password)
-		token = account_activation_token.make_token(user)
-		pp.pprint(token)
-		user.is_active = True
-		request.user = user
-		pp.pprint(request.user)
-		return Response({"status": status.HTTP_200_OK, "Token": token})
+    permission_classes = [permissions.AllowAny]
+    @csrf_exempt
+    def post(self, request):
+        #permission_classes = [permissions.IsAuthenticated]
+        serializer = LoginSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.validate(data=request.data)
+        username = request.data.get('username')
+        password = request.data.get('password')	
+        user = authenticate(username=username, password=password)
+        pp = pprint.PrettyPrinter(indent=4)
+        login(request)
+        update_last_login(None, user)
+        pp.pprint("logged in")
+        pp.pprint(user.pk)
+        pp.pprint(username)
+        pp.pprint(password)
+        token = account_activation_token.make_token(user)
+        pp.pprint(token)
+        user.is_active = True
+        request.user = user
+        pp.pprint(request.user)
+        user_logged_in.send(sender=user.__class__, request=request, user=user) 
+        return Response({"status": status.HTTP_200_OK, "Token": token})
 
-		
-	def get(self, request):
-		serializer = LoginSerializer(data=request.data, context={'request': request})
-		serializer.is_valid(raise_exception=True)
-		serializer.validate(data=request.data)
-		username = request.data.get('username')
-		password = request.data.get('password')	
-		user = authenticate(username=username, password=password)
-		pp = pprint.PrettyPrinter(indent=4)
-		login(request)
-		update_last_login(None, user)
-		pp.pprint("logged in")
-		pp.pprint(user.pk)
-		pp.pprint(username)
-		pp.pprint(password)
-		token = account_activation_token.make_token(user)
-		pp.pprint(token)
-		user.is_active = True
-		request.user = user
-		pp.pprint(request.user)
-		return Response({"status": status.HTTP_200_OK, "Token": token})
+        
+    def get(self, request):
+        serializer = LoginSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.validate(data=request.data)
+        username = request.data.get('username')
+        password = request.data.get('password')	
+        user = authenticate(username=username, password=password)
+        pp = pprint.PrettyPrinter(indent=4)
+        login(request)
+        update_last_login(None, user)
+        pp.pprint("logged in")
+        pp.pprint(user.pk)
+        pp.pprint(username)
+        pp.pprint(password)
+        token = account_activation_token.make_token(user)
+        pp.pprint(token)
+        user.is_active = True
+        request.user = user
+        pp.pprint(request.user)
+        return Response({"status": status.HTTP_200_OK, "Token": token})
 
 @method_decorator(csrf_exempt, name='post')
 class SignupViewSet(APIView):
-	permission_classes = [permissions.AllowAny]
-	@csrf_exempt
-	def post(self, request):
-		#permission_classes = [permissions.IsAuthenticated]
-		serializer = RegisterSerializer(data=request.data, context={'request': request})
-		#serializer.is_valid(raise_exception=True)
-		#serializer.validate(data=request.data)
-		username = request.data.get('username')
-		password = request.data.get('password')	
-		password2 = request.data.get('password2')
-		email = request.data.get('email')
-		authenticate(username=username, password=password, password2=password2, email=email)
-		user = serializer.create(validated_data=request.data)
-		user.refresh_from_db()
-		#user.profile.birth_date = form.cleaned_data.get('birth_date')
-		user.is_staff = False
-		user.is_superuser = False
-		user.is_admin = False
-		user.save()
-		subject = 'Activate Your Purefun Account'
-		connection = mail.get_connection() # Manually open the connection 
-		connection.open() # Construct an email message that uses the connection 
-		email = mail.EmailMessage( 'Hello', 'Body goes here', 'coleparsons22@gmail.com', ['coleparsons22@gmail.com'], connection=connection, ) 
-		email.send() # Send the email
-		connection.close()
-		login(request)
-		#user.email_user(subject, message)
-		return render(request, 'main/account_activation_sent.html')
+    permission_classes = [permissions.AllowAny]
+    @csrf_exempt
+    def post(self, request):
+        #permission_classes = [permissions.IsAuthenticated]
+        serializer = RegisterSerializer(data=request.data, context={'request': request})
+        #serializer.is_valid(raise_exception=True)
+        #serializer.validate(data=request.data)
+        username = request.data.get('username')
+        password = request.data.get('password')	
+        password2 = request.data.get('password2')
+        email = request.data.get('email')
+        authenticate(username=username, password=password, password2=password2, email=email)
+        user = serializer.create(validated_data=request.data)
+        user.refresh_from_db()
+        #user.profile.birth_date = form.cleaned_data.get('birth_date')
+        user.is_staff = False
+        user.is_superuser = False
+        user.is_admin = False
+        user.save()
+        subject = 'Activate Your Purefun Account'
+        connection = mail.get_connection() # Manually open the connection 
+        connection.open() # Construct an email message that uses the connection 
+        email = mail.EmailMessage( 'Hello', 'Body goes here', 'coleparsons22@gmail.com', ['coleparsons22@gmail.com'], connection=connection, ) 
+        email.send() # Send the email
+        connection.close()
+        login(request)
+        #user.email_user(subject, message)
+        return render(request, 'main/account_activation_sent.html')
 
 
 class ProfileViewSet(APIView):
