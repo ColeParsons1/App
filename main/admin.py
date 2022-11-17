@@ -18,9 +18,9 @@ from .models import Profile, Job, Topic, Notification, Message, Account_Type
 #from friendship.admin import 
 admin.site.register(Job)
 admin.site.register(Topic)
-admin.site.register(Notification)
+#admin.site.register(Notification)
 admin.site.register(Message)
-admin.site.register(Account_Type)
+#admin.site.register(Account_Type)
 #admin.site.register(API_Test)
 
 
