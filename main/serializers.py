@@ -208,6 +208,25 @@ class TopicSerializer(serializers.ModelSerializer):
 		'Label',	
 		)
 
+class LogoutSerializer(serializers.Serializer):
+	class Meta:
+		model = User
+		username = serializers.CharField(max_length=255)
+		password = serializers.CharField(max_length=128, write_only=True)
+
+	def validate(self, data):
+		username = data.get('username')
+		password = data.get('password')
+		if username and password:
+
+			user = authenticate(request=self.context.get('request'),
+								username=username, password=password)
+			if user:
+				data['user'] = user
+
+			data['user'] = user
+		return data
+
 class LoginSerializer(serializers.Serializer):
 	class Meta:
 		model = User

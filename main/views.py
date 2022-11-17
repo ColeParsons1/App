@@ -1044,6 +1044,18 @@ class SignupViewSet(APIView):
         #user.email_user(subject, message)
         return render(request, 'main/account_activation_sent.html')
 
+permission_classes = [permissions.AllowAny]            
+@method_decorator(csrf_exempt, name='post')
+class LogoutViewSet(APIView):
+    permission_classes = [permissions.AllowAny]
+    @csrf_exempt
+    def post(self, request):
+        #permission_classes = [permissions.IsAuthenticated]
+        #user = authenticate(username=username, password=password)
+        pp = pprint.PrettyPrinter(indent=4)
+        logout(request, request.user)
+        pp.pprint("logged out")
+        return HttpResponseRedirect('/profiles/')
 
 class ProfileViewSet(APIView):
     
