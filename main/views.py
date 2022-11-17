@@ -138,7 +138,7 @@ def inbox(request, username):
 
 @csrf_exempt
 def signout(request):
-    logout(request, request.user)
+    logout(request)
     return render(request, 'main/about.html') 
 
 def about(request):
