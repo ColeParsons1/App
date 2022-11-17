@@ -941,10 +941,8 @@ class LoginViewSet(APIView):
         user.is_active = True
         request.user = user
         pp.pprint(request.user)
-        login(request.user)
-        update_last_login(None, request.user)
         user_logged_in.send(sender=user.__class__, request=request, user=user) 
-        return request.user
+        return Response(user)
 
         
     def get(self, request):
