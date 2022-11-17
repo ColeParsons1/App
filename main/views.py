@@ -913,7 +913,10 @@ def assignJob(job_id, user):
         'post': job,
         #'liked': liked,
     }
-    return HttpResponse(template.render(context))   
+    return HttpResponse(template.render(context))
+
+def log_in_success(request):
+    return HttpResponse("%s has logged in!" % request.user)       
 
 
 permission_classes = [permissions.AllowAny]            
@@ -942,7 +945,7 @@ class LoginViewSet(APIView):
         request.user = user
         pp.pprint(request.user)
         user_logged_in.send(sender=user.__class__, request=request, user=user) 
-        return Response(user)
+        return HttpResponseRedirect('/log_in_success/')
 
         
     def get(self, request):
