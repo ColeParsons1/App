@@ -939,7 +939,7 @@ def login_request(request):
 
 
 permission_classes = [permissions.AllowAny]            
-@method_decorator(csrf_exempt, name='post')
+@method_decorator(csrf_exempt, name='login')
 class Login2ViewSet(APIView):
     permission_classes = [permissions.AllowAny]
     @csrf_exempt
