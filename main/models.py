@@ -325,12 +325,16 @@ class Muted(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
     vehicle_type = models.CharField(max_length=30, blank=True)
     location = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
+    License_Picture = models.ImageField(blank=True, null=True)
     Profile_Picture = models.ImageField(blank=True, null=True)
     Account_Type = models.ForeignKey(Account_Type, blank=True, null=True, on_delete=models.CASCADE)
     Notifications = models.PositiveIntegerField(default=0)
+    Messages = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.user.username
