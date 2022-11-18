@@ -1187,17 +1187,16 @@ class JobViewSet(APIView):
         queryset = Job.objects.filter(InProgress=False).order_by('Created').reverse()
         serializer = JobSerializer(queryset, many=True)
         return Response(serializer.data)
-  
+
+    @csrf_exempt
     def post(self, request):
-        permission_classes = [permissions.IsAuthenticated]
-        prepared_data_variable = request.user
+        permission_classes = [permissions.AllowAny]
         user = request.user
         serializer = NotificationSerializer(data=request.data)
         
         if serializer.is_valid():
             job_id = request.data.get('id')
-            assignJob(job_id, user)
-            return Response()    
+            assignJob(job_id, user)    
         return Response(serializer.data)
 
 permission_classes = [permissions.AllowAny]
