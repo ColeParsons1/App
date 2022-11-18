@@ -1051,7 +1051,7 @@ class SignupViewSet(APIView):
         #email = send_mail.EmailMessage( 'Hello', 'Body goes here', 'coleparsons22@gmail.com', ['coleparsons22@gmail.com'], connection=connection, ) 
         #email.send() # Send the email
         #connection.close()
-        login(request)
+        login(request, user)
         #user.email_user(subject, message)
         return HttpResponseRedirect('/profiles/')
 
