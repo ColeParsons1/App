@@ -1042,7 +1042,7 @@ class SignupViewSet(APIView):
         user.save()
         user.Profile.first_name = first_name
         user.Profile.last_name = last_name
-        user.save()
+        user.Profile.save()
         subject = 'Activate Your Purefun Account'
         connection = mail.get_connection() # Manually open the connection 
         connection.open() # Construct an email message that uses the connection 
