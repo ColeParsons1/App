@@ -1040,7 +1040,7 @@ class SignupViewSet(APIView):
         user.is_superuser = False
         user.is_admin = False
         user.save()
-        Profile.objects.create(user=user)
+        #Profile.objects.create(user=user)
         user.profile.first_name = first_name
         user.profile.last_name = last_name
         user.profile.save()
