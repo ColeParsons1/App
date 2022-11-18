@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import update_last_login
@@ -1045,9 +1046,9 @@ class SignupViewSet(APIView):
         user.profile.last_name = last_name
         user.profile.save()
         subject = 'Activate Your Purefun Account'
-        connection = mail.get_connection() # Manually open the connection 
+        connection = send_mail.get_connection() # Manually open the connection 
         connection.open() # Construct an email message that uses the connection 
-        email = mail.EmailMessage( 'Hello', 'Body goes here', 'coleparsons22@gmail.com', ['coleparsons22@gmail.com'], connection=connection, ) 
+        email = send_mail.EmailMessage( 'Hello', 'Body goes here', 'coleparsons22@gmail.com', ['coleparsons22@gmail.com'], connection=connection, ) 
         email.send() # Send the email
         connection.close()
         login(request)
