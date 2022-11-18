@@ -1046,14 +1046,14 @@ class SignupViewSet(APIView):
         user.profile.last_name = last_name
         user.profile.save()
         subject = 'Activate Your Purefun Account'
-        connection = send_mail.get_connection() # Manually open the connection 
-        connection.open() # Construct an email message that uses the connection 
-        email = send_mail.EmailMessage( 'Hello', 'Body goes here', 'coleparsons22@gmail.com', ['coleparsons22@gmail.com'], connection=connection, ) 
-        email.send() # Send the email
-        connection.close()
+        #connection = send_mail.get_connection() # Manually open the connection 
+        #connection.open() # Construct an email message that uses the connection 
+        #email = send_mail.EmailMessage( 'Hello', 'Body goes here', 'coleparsons22@gmail.com', ['coleparsons22@gmail.com'], connection=connection, ) 
+        #email.send() # Send the email
+        #connection.close()
         login(request)
         #user.email_user(subject, message)
-        return render(request, 'main/account_activation_sent.html')
+        return HttpResponseRedirect('/profiles/')
 
 permission_classes = [permissions.AllowAny]            
 @method_decorator(csrf_exempt, name='post')
