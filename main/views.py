@@ -1030,6 +1030,8 @@ class SignupViewSet(APIView):
         password = request.data.get('password')	
         password2 = request.data.get('password2')
         email = request.data.get('email')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
         authenticate(username=username, password=password, password2=password2, email=email)
         user = serializer.create(validated_data=request.data)
         user.refresh_from_db()
@@ -1037,6 +1039,8 @@ class SignupViewSet(APIView):
         user.is_staff = False
         user.is_superuser = False
         user.is_admin = False
+        user.Profile.first_name = first_name
+        user.Profile.last_name = last_name
         user.save()
         subject = 'Activate Your Purefun Account'
         connection = mail.get_connection() # Manually open the connection 

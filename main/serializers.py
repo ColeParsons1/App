@@ -3,6 +3,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from .models import Profile
 from .models import Post
+from .models import Account_Type
 from .models import Job
 from .models import Topic
 from .models import Message
@@ -71,10 +72,13 @@ class ProfileSerializer(serializers.ModelSerializer):
 		fields = (
 		'id',	
 		'user',
+		'first_name',
+		'last_name',
 		'location',
 		'birth_date',
 		'Account_Type',
-		'Profile_Picture',	
+		'Profile_Picture',
+		'License_Picture',
 		)           
 
 
@@ -276,10 +280,12 @@ class RegisterSerializer(serializers.Serializer):
 
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
+    #Account_Type = serializers.ModelField(write_only=True, required=True, queryset=Account_Type.objects.all())
+
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2', 'email')
+        fields = ('username', 'password', 'password2', 'email',)
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
