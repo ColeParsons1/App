@@ -1223,7 +1223,7 @@ class JobViewSet(APIView):
             job_id = request.data.get('id')
             assignJob(request, job_id)
             Response()  
-        return Response(serializer.data)
+        return Response()
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
