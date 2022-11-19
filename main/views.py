@@ -1208,16 +1208,13 @@ class JobViewSet(APIView):
     queryset = Job.objects.all().order_by('Created').reverse()
     serializer = JobSerializer(queryset, many=True)
     
-    
     def get(self, request):
         queryset = Job.objects.filter(InProgress=False).order_by('Created').reverse()
         serializer = JobSerializer(queryset, many=True)
         return Response(serializer.data)
 
-
     permission_classes = [permissions.AllowAny]
     def post(self, request):
-        user = request.user
         serializer = JobSerializer(data=request.data)
         
         if serializer.is_valid():
