@@ -28,7 +28,7 @@ class JobSerializer(serializers.ModelSerializer):
 		if Job.Assigned_Lugger:
 			return Job.Assigned_Lugger.username
 		else:
-			return "Admin"	
+			return "None"	
 		
 	class Meta:
 		model = Job
