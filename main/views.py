@@ -1233,7 +1233,7 @@ class MyJobViewSet(APIView):
         if serializer.is_valid():
             job_id = request.data.get('id')
             assignJob(job_id, user)
-            return Response()    
+            return Response(serializer.data)    
         return Response(serializer.data)        
                                
 class GroupViewSet(APIView):
