@@ -1196,7 +1196,7 @@ permission_classes = [permissions.AllowAny]
 class JobViewSet(APIView):
     queryset = Job.objects.all().order_by('Created').reverse()
     serializer = JobSerializer(queryset, many=True)
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     
     def get(self, request):
         queryset = Job.objects.filter(InProgress=False).order_by('Created').reverse()
@@ -1219,7 +1219,7 @@ permission_classes = [permissions.AllowAny]
 class MyJobViewSet(APIView):
     queryset = Job.objects.all().order_by('Created').reverse()
     serializer = JobSerializer(queryset, many=True)
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     
     def get(self, request):
         queryset = Job.objects.filter(Assigned_Lugger = request.user).order_by('Created').reverse()
