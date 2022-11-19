@@ -21,7 +21,7 @@ class JobSerializer(serializers.ModelSerializer):
 	Assigned_Lugger = serializers.SerializerMethodField()
 	def get_Job_Type(self, Job):
 		if Job.Job_Type:
-			return Job.Job_Type
+			return Job.Job_Type.Label
 		return default
 	def get_Assigned_Lugger(self, Job):
 		if Job.Assigned_Lugger:
