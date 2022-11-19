@@ -909,20 +909,17 @@ def getLongitude(address):
 
     return location.longitude    
 
-@csrf_exempt
+@csrf_exempt            
+@method_decorator(csrf_exempt, name='assignJob')
 def assignJob(request, job_id):
+    permission_classes = [permissions.AllowAny]
     job = get_object_or_404(Job, pk=job_id)
     usr = request.user
     job.Assigned_Lugger = usr
     job.InProgress = True
     job.save()
 
-    template = loader.get_template('main/index.html')
-    context = {
-        'post': job,
-        #'liked': liked,
-    }
-    return render()
+    return render(request=request, template_name="main/login.html", context={"login_form":job}) 
 
 def login_request(request):
     if request.method == "POST":
