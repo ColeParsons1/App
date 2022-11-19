@@ -40,7 +40,6 @@ urlpatterns = [
     path('myjobs/', views.MyJobViewSet.as_view()),
     path('groups/', views.GroupViewSet.as_view()),
     path('logout/', views.signout, name='signout'),
-    path('assign/', views.assign, name='assign'),
     path('login/', views.LoginViewSet.as_view()),
     path('register/', views.SignupViewSet.as_view()),
     path('profiles/', views.ProfileViewSet.as_view()),
