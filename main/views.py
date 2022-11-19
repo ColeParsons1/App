@@ -1210,9 +1210,10 @@ class JobViewSet(APIView):
         
         if serializer.is_valid():
             job_id = request.data.get('id')
+            serializer.validated_data['Job_Type'] = request.data.get('Job_Type')
             assignJob(request, job_id)
             Response()  
-        return Response(serializer.data)
+        return Response()
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
