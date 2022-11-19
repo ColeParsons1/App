@@ -29,7 +29,7 @@ class JobSerializer(serializers.ModelSerializer):
 			return Job.Assigned_Lugger.username
 		else:
 			return ""
-	def get_Image(self, Post):
+	def get_Image(self, Job):
 		if Job.Image:
 			return Job.Image.url
 		return ""			
