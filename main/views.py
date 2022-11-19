@@ -909,10 +909,10 @@ def getLongitude(address):
 
     return location.longitude    
 
-
-def assignJob(job_id, user):
+@csrf_exempt
+def assignJob(request, job_id):
     job = get_object_or_404(Job, pk=job_id)
-    usr = User.objects.get(pk=user.id)
+    usr = request.user
     job.Assigned_Lugger = usr
     job.InProgress = True
     job.save()
@@ -922,7 +922,7 @@ def assignJob(job_id, user):
         'post': job,
         #'liked': liked,
     }
-    return HttpResponse(template.render(context))
+    return render()
 
 def login_request(request):
     if request.method == "POST":
@@ -1190,7 +1190,7 @@ class AcceptJobViewSet(APIView):
         
         if serializer.is_valid():
             job_id = request.data.get('id')
-            assignJob(job_id, user)
+            assignJob(request, job_id)
             return Response(serializer.data)   
         return Response(serializer.data)                
 
