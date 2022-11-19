@@ -1184,7 +1184,6 @@ class JobDetailViewSet(APIView):
         serializer = JobSerializer(jobs, many=True)
         return Response(serializer.data)
 
-  
 class AcceptJobViewSet(APIView):
     queryset = Job.objects.all()#permission_classes = (permissions.AllowAny,)
     serializer = PostSerializer(queryset, many=True)
