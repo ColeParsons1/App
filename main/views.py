@@ -1228,7 +1228,7 @@ class MyJobViewSet(APIView):
   
     def post(self, request):
         user = request.user
-        serializer = NotificationSerializer(data=request.data)
+        serializer = JobSerializer(data=request.data)
         
         if serializer.is_valid():
             job_id = request.data.get('id')
