@@ -1205,7 +1205,6 @@ class JobViewSet(APIView):
 
     @csrf_exempt
     def post(self, request):
-        permission_classes = [permissions.AllowAny]
         user = request.user
         serializer = JobSerializer(data=request.data)
         
