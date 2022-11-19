@@ -41,7 +41,6 @@ class JobSerializer(serializers.ModelSerializer):
 		'Business_Name',
 		'Job_Type',
 		'Load_Weight',
-		'Image',
 		'ImageString',
 		'Pickup_Address',
 		'Destination_Address',
