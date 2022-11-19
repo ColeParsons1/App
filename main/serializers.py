@@ -22,12 +22,13 @@ class JobSerializer(serializers.ModelSerializer):
 	def get_Job_Type(self, Job):
 		if Job.Job_Type:
 			return Job.Job_Type.Label
-		return default
+		else:
+			return "General"
 	def get_Assigned_Lugger(self, Job):
 		if Job.Assigned_Lugger:
 			return Job.Assigned_Lugger.username
 		else:
-			return "Admin"			
+			return "Admin"	
 		
 	class Meta:
 		model = Job
