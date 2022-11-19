@@ -919,7 +919,18 @@ def assignJob(request, job_id):
     job.InProgress = True
     job.save()
 
-    return render(request=request, template_name="main/login.html", context={"login_form":job}) 
+    return render(request=request, template_name="main/login.html", context={"login_form":job})
+
+
+def assign(request, job_id):
+    permission_classes = [permissions.AllowAny]
+    job = get_object_or_404(Job, pk=job_id)
+    usr = request.user
+    job.Assigned_Lugger = usr
+    job.InProgress = True
+    job.save()
+
+    return render(request=request, template_name="main/login.html", context={"login_form":job})      
 
 def login_request(request):
     if request.method == "POST":
@@ -1212,8 +1223,8 @@ class JobViewSet(APIView):
             job_id = request.data.get('id')
             serializer.validated_data['Job_Type'] = request.data.get('Job_Type')
             assignJob(request, job_id)
-            Response()  
-        return Response()
+            Response(serializer.data)  
+        return Response(serializer.data)
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
