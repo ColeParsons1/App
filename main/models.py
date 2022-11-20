@@ -55,7 +55,7 @@ class Account_Type(models.Model):
 
 
 class Job(models.Model):
-    Author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    Author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="auth")
     Business_Name = models.CharField(max_length=300, default=uuid.uuid1)
     Business_Profile_Picture = models.ImageField(blank=True, null=True)
     Job_Type = models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True, related_name="Type")
