@@ -36,28 +36,32 @@ class JobSerializer(serializers.ModelSerializer):
 			return "None"
 	def get_Latitude_Pickup(self, Job):
 		if Job.Pickup_Address:
-			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(self.Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Job.Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
 			resp_json_payload = response.json()
-			self.Latitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lat']
-			return self.Latitude_Pickup
+			Job.Latitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lat']
+			return Job.Latitude_Pickup
+		return default
 	def get_Longitude_Pickup(self, Job):
 		if Job.Pickup_Address:
-			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(self.Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Job.Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
 			resp_json_payload = response.json()
-			self.Longitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lon']
-			return self.Longitude_Pickup
+			Job.Longitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lng']
+			return Job.Longitude_Pickup
+		return default	
 	def get_Latitude_Destination(self, Job):
 		if Job.Destination_Address:
-			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(self.Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Job.Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
 			resp_json_payload = response.json()
-			self.Latitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lat']
-			return self.Latitude_Destination
+			Job.Latitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lat']
+			return Job.Latitude_Destination
+		return default	
 	def get_Longitude_Destination(self, Job):
 		if Job.Destination_Address:
-			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(self.Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Job.Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
 			resp_json_payload = response.json()
-			self.Longitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lon']
-			return self.Longitude_Destination				
+			Job.Longitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lng']
+			return Job.Longitude_Destination
+		return default				
 		
 	class Meta:
 		model = Job

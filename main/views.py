@@ -1179,11 +1179,9 @@ class JobViewSet(APIView):
     def post(self, request):
         serializer = JobSerializer(data=request.data)
         
-        if serializer.is_valid():
-            pickupAdd = request.data.get('Pickup_Address')
-            destAdd = request.data.get('Destination_Address')
-            Response()  
-        return Response()
+        if serializer.is_valid(): 
+            return Response()
+        return Response(serializer.data)    
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
