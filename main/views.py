@@ -1183,7 +1183,7 @@ class JobViewSet(APIView):
             pickupAdd = request.data.get('Pickup_Address')
             destAdd = request.data.get('Destination_Address')
             Response()  
-        return Response(serializer.data)
+        return Response()
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
