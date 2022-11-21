@@ -67,7 +67,6 @@ class ProfileSerializer(serializers.ModelSerializer):
 		return default
 
 	
-
 	class Meta:
 		model = Profile
 		fields = (

@@ -1192,8 +1192,8 @@ class JobViewSet(APIView):
         serializer = JobSerializer(data=request.data)
         
         if serializer.is_valid():
-            job_id = request.data.get('id')
-            assignJob(request, job_id)
+            #serializer.validated_data['Image'] = serializer.validated_data['ImageString']
+            serializer.save()
             Response()  
         return Response()
 
