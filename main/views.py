@@ -65,6 +65,8 @@ from django.views.generic import TemplateView, ListView
 from django.utils.decorators import method_decorator
 import json
 from geopy.geocoders import Nominatim
+import requests
+import urllib.parse
 
 
 def index(request):
@@ -892,22 +894,7 @@ def removeNotifications(request):
         'all_Notifications': all_Notifications,
     }
     return HttpResponse(template.render(context, request))
-
-def getLatitude(address):
-    geolocator = Nominatim(user_agent="mysite2")
-    location = geolocator.geocode(address)
-    print(location.address)
-    print((location.latitude, location.longitude))
-
-    return location.latitude
-
-def getLongitude(address):
-    geolocator = Nominatim(user_agent="mysite2")
-    location = geolocator.geocode(address)
-    print(location.address)
-    print((location.latitude, location.longitude))
-
-    return location.longitude    
+    
 
 @csrf_exempt            
 @method_decorator(csrf_exempt, name='assignJob')
@@ -930,7 +917,8 @@ def assign(request, job_id):
     job.InProgress = True
     job.save()
 
-    return render(request=request, template_name="main/login.html", context={"login_form":job})      
+    return render(request=request, template_name="main/login.html", context={"login_form":job})
+
 
 def login_request(request):
     if request.method == "POST":
@@ -948,7 +936,7 @@ def login_request(request):
         else:
             messages.error(request,"Invalid username or password.")
     form = AuthenticationForm()
-    return render(request=request, template_name="main/login.html", context={"login_form":form})    
+    return render(request=request, template_name="main/login.html", context={"login_form":form})
 
 
 permission_classes = [permissions.AllowAny]            
@@ -1192,10 +1180,10 @@ class JobViewSet(APIView):
         serializer = JobSerializer(data=request.data)
         
         if serializer.is_valid():
-            #serializer.validated_data['Image'] = serializer.validated_data['ImageString']
-            serializer.save()
+            pickupAdd = request.data.get('Pickup_Address')
+            destAdd = request.data.get('Destination_Address')
             Response()  
-        return Response()
+        return Response(serializer.data)
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
