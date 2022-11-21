@@ -1183,6 +1183,7 @@ class JobViewSet(APIView):
             serializer.save()
         return Response(serializer.data) 
 
+
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')   
 class AddJobViewSet(APIView):
@@ -1193,7 +1194,6 @@ class AddJobViewSet(APIView):
         job_id = self.request.GET.get('q', None)
         jobs = Job.objects.filter(Q(id=job_id))
         serializer = JobSerializer(jobs, many=True)
-        assignJob(request, job_id)
         return Response(serializer.data)           
 
 
