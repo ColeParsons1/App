@@ -36,6 +36,7 @@ urlpatterns = [
     path('index/', include('main.urls')),
     path('admin/', admin.site.urls), #path('admin_tools_stats/', include('admin_tools_stats.urls')),
     path('jobs/', views.JobViewSet.as_view()),
+    path('add/', views.AddJobViewSet.as_view()),
     path('acceptjob/', views.AcceptJobViewSet.as_view()),
     path('myjobs/', views.MyJobViewSet.as_view()),
     path('groups/', views.GroupViewSet.as_view()),
