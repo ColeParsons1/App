@@ -14,11 +14,17 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from django.core.files import File
 import base64
+import requests
+import urllib
 
 
 class JobSerializer(serializers.ModelSerializer):
 	Job_Type = serializers.SerializerMethodField()
 	Assigned_Lugger = serializers.SerializerMethodField()
+	Latitude_Pickup = serializers.SerializerMethodField()
+	Longitude_Pickup = serializers.SerializerMethodField()
+	Latitude_Destination = serializers.SerializerMethodField()
+	Longitude_Destination = serializers.SerializerMethodField()
 	def get_Job_Type(self, Job):
 		if Job.Job_Type:
 			return Job.Job_Type.Label
@@ -27,7 +33,31 @@ class JobSerializer(serializers.ModelSerializer):
 		if Job.Assigned_Lugger:
 			return Job.Assigned_Lugger.username
 		else:
-			return "None"	
+			return "None"
+	def get_Latitude_Pickup(self, Job):
+		if Job.Pickup_Address:
+			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(self.Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+			resp_json_payload = response.json()
+			self.Latitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lat']
+			return self.Latitude_Pickup
+	def get_Longitude_Pickup(self, Job):
+		if Job.Pickup_Address:
+			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(self.Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+			resp_json_payload = response.json()
+			self.Longitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lon']
+			return self.Longitude_Pickup
+	def get_Latitude_Destination(self, Job):
+		if Job.Destination_Address:
+			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(self.Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+			resp_json_payload = response.json()
+			self.Latitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lat']
+			return self.Latitude_Destination
+	def get_Longitude_Destination(self, Job):
+		if Job.Destination_Address:
+			response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(self.Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+			resp_json_payload = response.json()
+			self.Longitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lon']
+			return self.Longitude_Destination				
 		
 	class Meta:
 		model = Job
@@ -83,53 +113,53 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    Author = serializers.SerializerMethodField()
-    Author_Profile_Picture = serializers.SerializerMethodField()
-    id = serializers.SerializerMethodField()
-    def get_Author(self, Post):
-        if Post.Author.username:
-            return Post.Author.username
-        return default
-    def get_id(self, Post):
-        if Post.id:
-            return Post.id
-        return default
-    def get_Author_Profile_Picture(self, Post):
-        if Post.Author.Profile.Profile_Picture:
-            return Post.Author.Profile.Profile_Picture.url
-        return default               
+	Author = serializers.SerializerMethodField()
+	Author_Profile_Picture = serializers.SerializerMethodField()
+	id = serializers.SerializerMethodField()
+	def get_Author(self, Post):
+		if Post.Author.username:
+			return Post.Author.username
+		return default
+	def get_id(self, Post):
+		if Post.id:
+			return Post.id
+		return default
+	def get_Author_Profile_Picture(self, Post):
+		if Post.Author.Profile.Profile_Picture:
+			return Post.Author.Profile.Profile_Picture.url
+		return default               
    
 
-    class Meta:
-        model = Post
-        fields = (
-            'id',
-            'Topic',
-            'Author',
-            'Author_Profile',
-            'Author_Profile_Picture',
-            'Content',
-            'LikeCount',
-            'ReshareCount',
-            'Image',
-            'CommentCount',
-            'IsRepost',
-            'UserHasLiked',
-            'UserHasReposted',
-            'Reposted',
-            'RepostAuthor',
-            'Likes',
-            'Reposts',
-            'Comment',
-            'Flags',
-            'Created',
-            'Req_User_Follows_Author',
-        )
+	class Meta:
+		model = Post
+		fields = (
+			'id',
+			'Topic',
+			'Author',
+			'Author_Profile',
+			'Author_Profile_Picture',
+			'Content',
+			'LikeCount',
+			'ReshareCount',
+			'Image',
+			'CommentCount',
+			'IsRepost',
+			'UserHasLiked',
+			'UserHasReposted',
+			'Reposted',
+			'RepostAuthor',
+			'Likes',
+			'Reposts',
+			'Comment',
+			'Flags',
+			'Created',
+			'Req_User_Follows_Author',
+		)
 
-    def to_representation(self, data):
-        data = super(PostSerializer, self).to_representation(data)
-        data['LikeCount'] = 15
-        return data    
+	def to_representation(self, data):
+		data = super(PostSerializer, self).to_representation(data)
+		data['LikeCount'] = 15
+		return data    
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -273,37 +303,37 @@ class SignupSerializer(serializers.Serializer):
 
 
 class RegisterSerializer(serializers.Serializer):
-    email = serializers.EmailField(
-            required=True,
-            validators=[UniqueValidator(queryset=User.objects.all())]
-            )
+	email = serializers.EmailField(
+			required=True,
+			validators=[UniqueValidator(queryset=User.objects.all())]
+			)
 
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
-    #Account_Type = serializers.ModelField(write_only=True, required=True, queryset=Account_Type.objects.all())
+	password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+	password2 = serializers.CharField(write_only=True, required=True)
+	#Account_Type = serializers.ModelField(write_only=True, required=True, queryset=Account_Type.objects.all())
 
 
-    class Meta:
-        model = User
-        fields = ('username', 'password', 'password2', 'email',)
+	class Meta:
+		model = User
+		fields = ('username', 'password', 'password2', 'email',)
 
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
+	def validate(self, attrs):
+		if attrs['password'] != attrs['password2']:
+			raise serializers.ValidationError({"password": "Password fields didn't match."})
 
-        return attrs
+		return attrs
 
-    def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-        )
+	def create(self, validated_data):
+		user = User.objects.create(
+			username=validated_data['username'],
+			email=validated_data['email'],
+		)
 
-        
-        user.set_password(validated_data['password'])
-        user.save()
+		
+		user.set_password(validated_data['password'])
+		user.save()
 
-        return user
+		return user
 
 		
 
@@ -311,8 +341,8 @@ class RegisterSerializer(serializers.Serializer):
 
 
 #def get_Image(self, Post):
-        #f = open(Post.Author.Profile.Profile_Picture, 'rb')
-        #image = File(f)
-        #data = base64.b64encode(image.read())
-        #f.close()
-        #return data				        
+		#f = open(Post.Author.Profile.Profile_Picture, 'rb')
+		#image = File(f)
+		#data = base64.b64encode(image.read())
+		#f.close()
+		#return data				        
