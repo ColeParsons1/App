@@ -1180,7 +1180,7 @@ class JobViewSet(APIView):
         serializer = JobSerializer(data=request.data)
         
         if serializer.is_valid(): 
-            return Response()
+            serializer.save()
         return Response(serializer.data)    
 
 permission_classes = [permissions.AllowAny]
