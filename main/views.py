@@ -1181,7 +1181,21 @@ class JobViewSet(APIView):
         
         if serializer.is_valid(): 
             serializer.save()
-        return Response(serializer.data)    
+        return Response(serializer.data) 
+
+permission_classes = [permissions.AllowAny]
+@method_decorator(csrf_exempt, name='post')   
+class AddJobViewSet(APIView):
+    queryset = Job.objects.all().order_by('Created').reverse()
+    serializer = JobSerializer(queryset, many=True)
+    
+    def get(self, request):
+        job_id = self.request.GET.get('q', None)
+        jobs = Job.objects.filter(Q(id=job_id))
+        serializer = JobSerializer(jobs, many=True)
+        assignJob(request, job_id)
+        return Response(serializer.data)           
+
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
