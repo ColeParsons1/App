@@ -1206,10 +1206,13 @@ class AddJobViewSet(APIView):
     serializer = JobSerializer(queryset, many=True)
     
     def get(self, request):
-        job_id = self.request.GET.get('q', None)
-        jobs = Job.objects.filter(Q(id=job_id))
-        serializer = JobSerializer(jobs, many=True)
-        return Response(serializer.data)           
+        Business_Name = self.request.GET.get('BusinessName', None)
+        #Business_Name = Job.objects.filter(Q(Business_Name=Business_Name))
+        Job_Type = Job.objects.filter(Q(Job_Type=Job_Type))
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(Business_Name)
+        pp.pprint(Job_Type)
+        return Response()           
 
 
 permission_classes = [permissions.AllowAny]
