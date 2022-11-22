@@ -1209,7 +1209,6 @@ class AddJobViewSet(APIView):
     def get(self, request):
         Business_Name = self.request.GET.get('BusinessName', None)
         Job_Type = self.request.GET.get('JobType', None)
-        ImageString = self.request.GET.get('ImageString', None)
         Load_Weight = self.request.GET.get('LoadWeight', None)
         Pieces = self.request.GET.get('Pieces', None)
         Pickup_Address = self.request.GET.get('PickupAddress', None)
@@ -1220,6 +1219,12 @@ class AddJobViewSet(APIView):
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(Business_Name)
         pp.pprint(Job_Type)
+        pp.pprint(Load_Weight)
+        pp.pprint(Pieces)
+        pp.pprint(Pickup_Address)
+        pp.pprint(Destination_Address)
+        pp.pprint(Description)
+        pp.pprint(Tip)
 
         #lat_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
         #resp_json_payload = lat_pickup_response.json()
