@@ -830,6 +830,21 @@ def get_client_ip(request):
                 #print"IP Address",ip
         return ip
 
+def queryset_iterator(qs, batchsize = 500, gc_collect = True):
+    iterator = qs.values_list('pk', flat=True).order_by('pk').distinct().iterator()
+    eof = False
+    while not eof:
+        primary_key_buffer = []
+        try:
+            while len(primary_key_buffer) < batchsize:
+                primary_key_buffer.append(iterator.next())
+        except StopIteration:
+            eof = True
+        for obj in qs.filter(pk__in=primary_key_buffer).order_by('pk').iterator():
+            yield obj
+        if gc_collect:
+            gc.collect()        
+
 
 SESSION_KEY = '_auth_user_id'
 BACKEND_SESSION_KEY = '_auth_user_backend'
@@ -1170,8 +1185,8 @@ class JobViewSet(APIView):
     queryset = Job.objects.all().order_by('Created').reverse()
     serializer = JobSerializer(queryset, many=True)
     
-    def get(self, request):
-        queryset = Job.objects.filter(InProgress=False).order_by('Created').reverse().iterator()
+    def get(self):
+        queryset = Job.objects.filter(InProgress=False).order_by('Created').reverse()
         serializer = JobSerializer(queryset, many=True)
         return Response(serializer.data)
 
