@@ -1207,8 +1207,9 @@ class AddJobViewSet(APIView):
     
     def get(self, request):
         Business_Name = self.request.GET.get('BusinessName', None)
+        Job_Type = self.request.GET.get('JobType', None)
         #Business_Name = Job.objects.filter(Q(Business_Name=Business_Name))
-        Job_Type = Job.objects.filter(Q(Job_Type=Job_Type))
+        #Job_Type = Job.objects.filter(Q(Job_Type=Job_Type))
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(Business_Name)
         pp.pprint(Job_Type)
