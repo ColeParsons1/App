@@ -1211,8 +1211,8 @@ class AddJobViewSet(APIView):
         Job_Type = self.request.GET.get('JobType', None)
         Load_Weight = self.request.GET.get('LoadWeight', None)
         Pieces = self.request.GET.get('Pieces', None)
-        Pickup_Address = self.request.GET.get('PickupAddress', None)
-        Destination_Address = self.request.GET.get('DestinationAddress', None)
+        Pickup_Address = self.request.GET.get('PickupAddress', None).replace("_", " ")
+        Destination_Address = self.request.GET.get('DestinationAddress', None).replace("_", " ")
         Description = self.request.GET.get('Description', None)
         Tip = self.request.GET.get('Tip', None)
 
