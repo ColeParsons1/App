@@ -1217,6 +1217,10 @@ class AddJobViewSet(APIView):
         Description = self.request.GET.get('Description', None)
         Tip = self.request.GET.get('Tip', None)
 
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(Business_Name)
+        pp.pprint(Job_Type)
+
         lat_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
         resp_json_payload = lat_pickup_response.json()
         print(resp_json_payload['results'][0]['geometry']['location']['lat'])
@@ -1239,12 +1243,9 @@ class AddJobViewSet(APIView):
         coords_2 = (Latitude_Destination, Longitude_Destination)
         Distance = geopy.distance.geodesic(coords_1, coords_2).miles 
 
-        Job.objects.create(Author=request.user, Business_Name=Business_Name, Job_Type=Job_Type, ImageString=ImageString, Load_Weight=Load_Weight, Pieces=Pieces, Description=Description, Pickup_Address=Pickup_Address, Destination_Address=Destination_Address, Latitude_Pickup=Latitude_Pickup, Longitude_Pickup=Longitude_Pickup, Latitude_Destination=Latitude_Destination, Longitude_Destination=Longitude_Destination, Distance=Distance, Tip=Tip)
+        #Job.objects.create(Author=request.user, Business_Name=Business_Name, Job_Type=Job_Type, ImageString=ImageString, Load_Weight=Load_Weight, Pieces=Pieces, Description=Description, Pickup_Address=Pickup_Address, Destination_Address=Destination_Address, Latitude_Pickup=Latitude_Pickup, Longitude_Pickup=Longitude_Pickup, Latitude_Destination=Latitude_Destination, Longitude_Destination=Longitude_Destination, Distance=Distance, Tip=Tip)
         #Business_Name = Job.objects.filter(Q(Business_Name=Business_Name))
         #Job_Type = Job.objects.filter(Q(Job_Type=Job_Type))
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(Business_Name)
-        pp.pprint(Job_Type)
         return Response()           
 
 
