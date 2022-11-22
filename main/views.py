@@ -12,6 +12,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.http import JsonResponse
 import json
+import geopy.distance
 from django.contrib import messages
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
 from django.db.models import Q
@@ -1208,6 +1209,37 @@ class AddJobViewSet(APIView):
     def get(self, request):
         Business_Name = self.request.GET.get('BusinessName', None)
         Job_Type = self.request.GET.get('JobType', None)
+        ImageString = self.request.GET.get('ImageString', None)
+        Load_Weight = self.request.GET.get('LoadWeight', None)
+        Pieces = self.request.GET.get('Pieces', None)
+        Pickup_Address = self.request.GET.get('PickupAddress', None)
+        Destination_Address = self.request.GET.get('DestinationAddress', None)
+        Description = self.request.GET.get('Description', None)
+        Tip = self.request.GET.get('Tip', None)
+
+        lat_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        resp_json_payload = lat_pickup_response.json()
+        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        Latitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lat']
+        lng_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        resp_json_payload = lng_pickup_response.json()
+        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        Longitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lng']
+
+        lat_destination_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        resp_json_payload = lat_destination_response.json()
+        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        Latitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lat']
+        lng_destination_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        resp_json_payload = lng_destination_response.json()
+        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        Longitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lng']
+
+        coords_1 = (Latitude_Pickup, Longitude_Pickup)
+        coords_2 = (Latitude_Destination, Longitude_Destination)
+        self.Distance = geopy.distance.geodesic(coords_1, coords_2).miles 
+
+        Job.objects.create(Author=request.user, Business_Name=Business_Name, Job_Type=Job_Type, ImageString=ImageString, Load_Weight=Load_Weight, Pieces=Pieces, Description=Description, Pickup_Address=Pickup_Address, Destination_Address=Destination_Address, Tip=Tip)
         #Business_Name = Job.objects.filter(Q(Business_Name=Business_Name))
         #Job_Type = Job.objects.filter(Q(Job_Type=Job_Type))
         pp = pprint.PrettyPrinter(indent=4)
