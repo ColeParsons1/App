@@ -1221,27 +1221,27 @@ class AddJobViewSet(APIView):
         pp.pprint(Business_Name)
         pp.pprint(Job_Type)
 
-        lat_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
-        resp_json_payload = lat_pickup_response.json()
-        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
-        Latitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lat']
-        lng_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
-        resp_json_payload = lng_pickup_response.json()
-        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
-        Longitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lng']
+        #lat_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        #resp_json_payload = lat_pickup_response.json()
+        #print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        #Latitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lat']
+        #lng_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        #resp_json_payload = lng_pickup_response.json()
+        #print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        #Longitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lng']
 
-        lat_destination_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
-        resp_json_payload = lat_destination_response.json()
-        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
-        Latitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lat']
-        lng_destination_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
-        resp_json_payload = lng_destination_response.json()
-        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
-        Longitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lng']
+        #lat_destination_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        #resp_json_payload = lat_destination_response.json()
+        #print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        #Latitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lat']
+        #lng_destination_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        #resp_json_payload = lng_destination_response.json()
+        #print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        #Longitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lng']
 
-        coords_1 = (Latitude_Pickup, Longitude_Pickup)
-        coords_2 = (Latitude_Destination, Longitude_Destination)
-        Distance = geopy.distance.geodesic(coords_1, coords_2).miles 
+        #coords_1 = (Latitude_Pickup, Longitude_Pickup)
+        #coords_2 = (Latitude_Destination, Longitude_Destination)
+        #Distance = geopy.distance.geodesic(coords_1, coords_2).miles 
 
         #Job.objects.create(Author=request.user, Business_Name=Business_Name, Job_Type=Job_Type, ImageString=ImageString, Load_Weight=Load_Weight, Pieces=Pieces, Description=Description, Pickup_Address=Pickup_Address, Destination_Address=Destination_Address, Latitude_Pickup=Latitude_Pickup, Longitude_Pickup=Longitude_Pickup, Latitude_Destination=Latitude_Destination, Longitude_Destination=Longitude_Destination, Distance=Distance, Tip=Tip)
         #Business_Name = Job.objects.filter(Q(Business_Name=Business_Name))
