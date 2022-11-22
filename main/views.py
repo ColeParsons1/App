@@ -1248,7 +1248,7 @@ class AddJobViewSet(APIView):
         coords_2 = (Latitude_Destination, Longitude_Destination)
         Distance = geopy.distance.geodesic(coords_1, coords_2).miles 
 
-        Job.objects.create(Business_Name=Business_Name, Job_Type=Job_Type, ImageString="1", Load_Weight=Load_Weight, Pieces=Pieces, Description=Description, Pickup_Address=Pickup_Address, Destination_Address=Destination_Address, Latitude_Pickup=Latitude_Pickup, Longitude_Pickup=Longitude_Pickup, Latitude_Destination=Latitude_Destination, Longitude_Destination=Longitude_Destination, Distance=Distance, Tip=Tip)
+        Job.objects.create(Business_Name=Business_Name, ImageString="1", Load_Weight=Load_Weight, Pieces=Pieces, Description=Description, Pickup_Address=Pickup_Address, Destination_Address=Destination_Address, Latitude_Pickup=Latitude_Pickup, Longitude_Pickup=Longitude_Pickup, Latitude_Destination=Latitude_Destination, Longitude_Destination=Longitude_Destination, Distance=Distance, Tip=Tip)
         #Business_Name = Job.objects.filter(Q(Business_Name=Business_Name))
         #Job_Type = Job.objects.filter(Q(Job_Type=Job_Type))
         return Response()           
