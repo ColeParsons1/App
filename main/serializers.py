@@ -29,7 +29,7 @@ class JobSerializer(serializers.ModelSerializer):
 		if Job.Assigned_Lugger:
 			return Job.Assigned_Lugger.username
 		else:
-			return default
+			return "None"
 
 		
 	class Meta:
