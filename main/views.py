@@ -1322,7 +1322,7 @@ class ImageViewSet(APIView):
 		queryset = Images.objects.all()
 		serializer = TemplateSerializer(data=request.data)
 		I = self.request.GET.get('Image', None)
-		Images.objects.create(Image = 'I')
+		Images.objects.create(Image = I)
 		return Response(serializer.data)
 
 	def post(self, request):
