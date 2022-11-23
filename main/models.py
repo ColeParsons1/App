@@ -33,6 +33,8 @@ from django.db.models import Avg, Count, Sum
 import uuid
 
 
+class Images(models.Model):
+    Image = models.ImageField(blank=True, null=True)
 
 class Topic(models.Model):
     Label = models.CharField(max_length=50)

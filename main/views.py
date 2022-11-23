@@ -54,10 +54,11 @@ from .serializers import GroupSerializer
 from .serializers import TopicSerializer
 from .serializers import LoginSerializer
 from .serializers import RegisterSerializer
+from .serializers import TemplateSerializer
 from rest_framework import permissions
 from functools import reduce
 from .models import Topic, User_Groups
-from .models import Post, Comment, Repost, Job, Liked_Post, Profile, Message, Notification, Flagged_Post, User_Groups
+from .models import Post, Comment, Repost, Job, Liked_Post, Profile, Message, Notification, Flagged_Post, User_Groups, Images
 from .forms import CommentForm
 from .forms import PostForm
 from .forms import ProfileForm, ImageForm, MessageForm, DMPostForm, GroupForm
@@ -1307,7 +1308,22 @@ class ProfileBackend(object):
         if prof.exists():
             return prof[0]
         else:
-            return None        	
+            return None 
+
+class ImageViewSet(APIView):
+	queryset = Images.objects.all()
+	permission_classes = [permissions.AllowAny]
+	serializer = TemplateSerializer(queryset, many=True)
+	@csrf_exempt
+	def post(self, request):
+		#post = Meme.objects.all()
+		#prepared_data_variable = request.user
+		serializer = TemplateSerializer(data=request.data)
+		#messages = Message.objects.filter(Q(receiver__username=request.user.username) | Q(sender__username=request.user.username))
+		#receiver = serializer.receiver
+		if serializer.is_valid():
+			serializer.save()
+		return Response(serializer.data)                   	
 
 #Content = form.save(commit=False)
         #Content.Author = request.user

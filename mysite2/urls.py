@@ -39,6 +39,7 @@ urlpatterns = [
     path('add/', views.AddJobViewSet.as_view()),
     path('acceptjob/', views.AcceptJobViewSet.as_view()),
     path('myjobs/', views.MyJobViewSet.as_view()),
+    path('images/', views.ImageViewSet.as_view()),
     path('groups/', views.GroupViewSet.as_view()),
     path('logout/', views.signout, name='signout'),
     path('login/', views.LoginViewSet.as_view()),
