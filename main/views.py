@@ -1316,15 +1316,17 @@ class ImageViewSet(APIView):
     queryset = Images.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer = TemplateSerializer(queryset, many=True)
-    @csrf_exempt
 
+    @csrf_exempt
     def get(self, request):
         queryset = Images.objects.all()
         serializer = TemplateSerializer(data=request.data)
         I = self.request.GET.get('Image', None)
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(I)
         Images.objects.create(Image = I)
         return Response(serializer.data)
-
+    @csrf_exempt
     def post(self, request):
         #post = Meme.objects.all()
         #prepared_data_variable = request.user
@@ -1333,7 +1335,7 @@ class ImageViewSet(APIView):
         #receiver = serializer.receiver
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)                   	
+        return Response()                   	
 
 #Content = form.save(commit=False)
         #Content.Author = request.user
