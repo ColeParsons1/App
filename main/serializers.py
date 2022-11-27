@@ -19,12 +19,7 @@ import urllib
 
 
 class TemplateSerializer(serializers.ModelSerializer):
-	Image = serializers.SerializerMethodField()
-	def get_Image(self):
-		if self.Image:
-			return self.Image.url
-		return ""
-
+	
 	class Meta:
 		model = Images
 		fields = (
