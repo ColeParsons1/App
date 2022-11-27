@@ -1335,11 +1335,13 @@ class ImageViewSet(APIView):
         #post = Meme.objects.all()
         #prepared_data_variable = request.user
         serializer = TemplateSerializer(data=request.data)
+        I = request.data.GET.get('Image', None)
+        Images.objects.create(Image = I)
         #messages = Message.objects.filter(Q(receiver__username=request.user.username) | Q(sender__username=request.user.username))
         #receiver = serializer.receiver
         if serializer.is_valid():
             serializer.save()
-        return Response()                   	
+        return Response(serializer.data)                   	
 
 #Content = form.save(commit=False)
         #Content.Author = request.user
