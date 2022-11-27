@@ -69,6 +69,7 @@ import json
 from geopy.geocoders import Nominatim
 import requests
 import urllib.parse
+from django.middleware.csrf import get_token
 
 
 def index(request):
@@ -1084,6 +1085,9 @@ class ProfileViewSet(APIView):
     def get(self, request):
         Profiles = Profile.objects.filter(user=request.user)
         serializer = ProfileSerializer(Profiles, many=True)
+        pp = pprint.PrettyPrinter(indent=4)
+        csrf_token = get_token(request)
+        pp.pprint(csrf_token)
         return Response(serializer.data)
 
 #@method_decorator(csrf_exempt, name='dispatch')
