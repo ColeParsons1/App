@@ -34,6 +34,7 @@ import uuid
 
 
 class Images(models.Model):
+    Name = models.CharField(max_length=50)
     Image = models.ImageField(blank=True, null=True)
 
 class Topic(models.Model):
