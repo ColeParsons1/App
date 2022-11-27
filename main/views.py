@@ -1007,7 +1007,7 @@ class LoginViewSet(APIView):
         request.user = user
         pp.pprint(request.user)
         user_logged_in.send(sender=user.__class__, request=request, user=user) 
-        return HttpResponseRedirect('/profiles/')
+        return Response({"status": status.HTTP_200_OK, "Token": token})
 
         
     def get(self, request):
