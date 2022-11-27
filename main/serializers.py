@@ -24,7 +24,6 @@ class TemplateSerializer(serializers.ModelSerializer):
 		model = Images
 		fields = (
 		'id',
-		'Name',
 		'Image',
 		)
 
