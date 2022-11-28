@@ -56,11 +56,11 @@ from .serializers import RegisterSerializer
 from .serializers import TemplateSerializer
 from rest_framework import permissions
 from functools import reduce
-from .models import Topic, User_Groups
-from .models import Post, Comment, Repost, Job, Liked_Post, Profile, Message, Notification, Flagged_Post, User_Groups, Images
+from .models import Topic
+from .models import Post, Comment, Repost, Job, Liked_Post, Profile, Message, Notification, Flagged_Post, Images
 from .forms import CommentForm
 from .forms import PostForm
-from .forms import ProfileForm, ImageForm, MessageForm, DMPostForm, GroupForm
+from .forms import ProfileForm, ImageForm, MessageForm, DMPostForm
 from django.core.files.storage import FileSystemStorage
 from django.views.generic import TemplateView, ListView
 from django.utils.decorators import method_decorator
