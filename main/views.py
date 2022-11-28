@@ -50,7 +50,6 @@ from .serializers import PostSerializer
 from .serializers import JobSerializer
 from .serializers import MessageSerializer
 from .serializers import NotificationSerializer
-from .serializers import GroupSerializer
 from .serializers import TopicSerializer
 from .serializers import LoginSerializer
 from .serializers import RegisterSerializer

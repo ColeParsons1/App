@@ -231,24 +231,6 @@ class NotificationSerializer(serializers.ModelSerializer):
 		)
 
 
-
-class GroupSerializer(serializers.ModelSerializer):
-	user = serializers.SerializerMethodField()
-	def get_user(self, User_Groups):
-		if User_Groups.user.username:
-			return User_Groups.user.username
-		return default
-		
-	class Meta:
-		model = User_Groups
-		fields = (
-		'id',
-		'user',
-		'Label',
-		'Members',	
-		)
-
-
 class TopicSerializer(serializers.ModelSerializer):
 		
 	class Meta:
