@@ -237,27 +237,3 @@ class report(forms.ModelForm):
         fields = ('message',)
 
         
-class GroupForm(forms.ModelForm):
-
-    Label = forms.CharField(label='Group Label', widget=forms.TextInput(attrs={'rows':1, 'cols':7}), required=False)
-    Members = forms.ModelMultipleChoiceField(label='Group Members', widget=forms.SelectMultiple(attrs={'rows':1, 'cols':1}), queryset=User.objects.distinct().order_by('username'), required=False)
-
-
-    class Meta:
-        model = User_Groups
-        fields = ('Members', 'Label',)
-        
-    def __init__(self, *args, **kwargs):
-        super(GroupForm, self).__init__(*args, **kwargs)
-        self.fields['Members'].required = False
-        self.fields['Label'].required = False
-        #self.fields['Members'] = self.instance.Members.split(',')
-    
-    #def clean_groups(self):
-        #Members = self.cleaned_data['Members']
-        #if Members:
-            #assert isinstance(Members, (list, tuple))
-            #return str(','.join(Members))
-        #else:
-            #return '' 
-        
