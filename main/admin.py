@@ -14,11 +14,12 @@ from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
 #from .models import Profile
 from API.models import API_Test
-from .models import Profile, Job, Topic, Notification, Message, Account_Type, Images
+from .models import Profile, Job, Topic, Notification, Message, Account_Type, Images, Post
 #from friendship.admin import 
 admin.site.register(Job)
 admin.site.register(Topic)
 admin.site.register(Images)
+admin.site.register(Post)
 #admin.site.register(Notification)
 admin.site.register(Message)
 #admin.site.register(Account_Type)

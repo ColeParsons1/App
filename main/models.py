@@ -100,24 +100,52 @@ class User_Groups(models.Model):
        return self.Label     
        
 
+class User_Groups(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    Label = models.CharField(max_length=50)
+    Members = models.ManyToManyField(User, blank=True, related_name="members")
+    
+    def __unicode__(self):
+       return self.Label     
+       
+
 class Post(models.Model):
     Author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     Author_Profile = models.ForeignKey('main.Profile', on_delete=models.CASCADE, blank=True, null=True)
     Author_Profile_Picture = models.CharField(max_length=300, blank=True, null=True)
+    Author_Display_Name = models.CharField(max_length=300, blank=True, null=True)
     Topic = models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True, related_name="Topic")
     Group = models.ForeignKey(User_Groups, on_delete=models.CASCADE, blank=True, null=True, related_name="User_Groups")
     Content = models.CharField(max_length=300, default=uuid.uuid1)
     Image = models.ImageField(blank=True, null=True)
+    Image2 = models.ImageField(blank=True, null=True)
+    Image3 = models.ImageField(blank=True, null=True)
+    Image4 = models.ImageField(blank=True, null=True)
+    ImageString = models.CharField(max_length=300, default="")
     Created = models.DateTimeField(auto_now_add=True)
+    LikeCount = models.PositiveIntegerField(default=0)
+    ReshareCount = models.PositiveIntegerField(default=0)
+    CommentCount = models.PositiveIntegerField(default=0)
     Comments = models.ForeignKey('main.Comment', on_delete=models.CASCADE, blank=True, null=True, related_name="comment")
+    PostComments = models.ForeignKey('main.Post', on_delete=models.CASCADE, blank=True, null=True, related_name="postcomment")
+    IsOriginalpost = models.BooleanField(default=True)
+    IsQuotepost = models.BooleanField(default=False)
     IsRepost = models.BooleanField(default=False)
-    UserHasLiked = models.BooleanField(User, default=False)
+    IsLike = models.BooleanField(default=False)
+    IsComment = models.BooleanField(default=False)
+    UserHasLiked = models.BooleanField(default=False)
     UserHasReposted = models.BooleanField(default=False)
+    RepostAuthor = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="repostAuthor")
+    Reposted = models.DateTimeField(auto_now_add=True)
     Likes = models.ManyToManyField(User, blank=True, related_name="likes")
     Reposts = models.ManyToManyField(User, blank=True, related_name="reposts")
     Comment = models.ManyToManyField(User, blank=True, related_name="comments")
     Flags = models.ManyToManyField(User, blank=True, related_name="flags")
+    ReplyingTo = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="repto")
+    Caption = models.CharField(max_length=300, default=uuid.uuid1)
+    PostItem = models.ForeignKey('main.Post', on_delete=models.CASCADE, blank=True, null=True, related_name="pos")
     Req_User_Follows_Author = models.BooleanField(default=False)
+    InteractionID = models.PositiveIntegerField(default=0)
     slug = models.SlugField(
         default='',
         editable=False,
