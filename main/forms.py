@@ -5,7 +5,7 @@ from django.forms import HiddenInput
 from .models import Post
 from .models import Comment
 from .models import Profile
-from .models import Report, Message, user_pics, Topic, User_Groups, Job
+from .models import Report, Message, user_pics, Topic, Job
 #from friendship.models import Follow, Block
 #from .models import FollowingManager
 import ast
