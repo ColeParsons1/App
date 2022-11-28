@@ -8,7 +8,6 @@ from .models import Job
 from .models import Topic
 from .models import Message
 from .models import Notification
-from .models import User_Groups
 from .models import Topic, Images
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
