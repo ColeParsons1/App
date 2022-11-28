@@ -1092,30 +1092,431 @@ class ProfileViewSet(APIView):
 
 #@method_decorator(csrf_exempt, name='dispatch')
 class PostViewSet(APIView):
-    queryset = Post.objects.all()#permission_classes = (permissions.AllowAny,)
-    serializer = PostSerializer(queryset, many=True)
-    permission_classes = [permissions.AllowAny]
+	queryset = Post.objects.all()#permission_classes = (permissions.AllowAny,)
+	serializer = PostSerializer(queryset, many=True)
+	#permission_classes = [permissions.IsAuthenticated]  
+	permission_classes = [permissions.AllowAny]
+	#permission_classes = [HasAPIKey]
+	def get(self, request):
+		#queryset = Profile.objects.all()
+		#Author__contains=request.user.profile.User_Following
+ 
+		viewer = request.user
+			#return i
+		#d = .aut                         
+		posts = Post.objects.filter(Q(Author__profile__User_Followers__username__icontains=viewer, IsComment=False)).order_by('id').reverse()
 
-    def post(self, request):
-        form = PostForm(request.POST or None, request.FILES or None)
-        permission_classes = [permissions.AllowAny]
-        prepared_data_variable = request.user
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.validated_data['Author'] = prepared_data_variable
-            serializer.save()
-        return Response(serializer.data)
+		serializer = PostSerializer(posts, many=True)
+		return Response(serializer.data)
+
+	@csrf_exempt
+	def post(self, request):
+		#form = PostForm(request.POST or None, request.FILES or None)
+		prepared_data_variable = request.user  #and serializer.validated_data['IsRepost'] == False
+		serializer = PostSerializer(data=request.data)
+		pp = pprint.PrettyPrinter(indent=4)
+		username = request.user.username
+		user = request.user
+		data = request.data
+		Content = data.get('Content')
+		checked = "My vibe has been checked :("
+
+		if "enate" in Content.replace(" ", ""):
+			Content = checked
+		if "olitic" in Content.replace(" ", ""):
+			Content = checked	
+		if "limate" in Content.replace(" ", ""):
+			Content = checked
+		if "rump" in Content.replace(" ", ""):
+			Content = checked
+		if "police" in Content.replace(" ", ""):
+			Content = checked
+		if "elect" in Content.replace(" ", ""):
+			Content = checked
+		if "epublican" in Content.replace(" ", ""):
+			Content = checked
+		if "emocrat" in Content.replace(" ", ""):
+			Content = checked
+		if "Biden" in Content.replace(" ", ""):
+			Content = checked
+		if "acist" in Content.replace(" ", ""):
+			Content = checked
+		if "acism" in Content.replace(" ", ""):
+			Content = checked
+		if "ropaganda" in Content.replace(" ", ""):
+			Content = checked
+		if "emocracy" in Content.replace(" ", ""):
+			Content = checked
+		if "racial" in Content.replace(" ", ""):
+			Content = checked
+		if "acial" in Content.replace(" ", ""):
+			Content = checked    
+		if "rivelage" in Content.replace(" ", ""):
+			Content = checked
+		if "hite" in Content.replace(" ", ""):
+			Content = checked
+		if "lave" in Content.replace(" ", ""):
+			Content = checked
+		if "BLM" in Content.replace(" ", ""):
+			Content = checked
+		if "blm" in Content.replace(" ", ""):
+			Content = checked
+		if "lack lives matter" in Content.replace(" ", ""):
+			Content = checked
+		if "president" in Content.replace(" ", ""):
+			Content = checked
+		if "vote" in Content.replace(" ", ""):
+			Content = checked
+		if "GOP" in Content.replace(" ", ""):
+			Content = checked
+		if "upreme court" in Content.replace(" ", ""):
+			Content = checked
+		if "KKK" in Content.replace(" ", ""):
+			Content = checked
+		if "ongress" in Content.replace(" ", ""):
+			Content = checked
+		if "apitol" in Content.replace(" ", ""):
+			Content = checked
+		if "law" in Content.replace(" ", ""):
+			Content = checked
+		if "tax" in Content.replace(" ", ""):
+			Content = checked
+		if "DNC" in Content.replace(" ", ""):
+			Content = checked
+		if "RNC" in Content.replace(" ", ""):
+			Content = checked
+		if "andidate" in Content.replace(" ", ""):
+			Content = checked
+		if "CNN" in Content.replace(" ", ""):
+			Content = checked
+		if "olice" in Content.replace(" ", ""):
+			Content = checked
+		if "fficer" in Content.replace(" ", ""):
+			Content = checked
+		if "enator" in Content.replace(" ", ""):
+			Content = checked
+		if "overn" in Content.replace(" ", ""):
+			Content = checked
+		if "onstitution" in Content.replace(" ", ""):
+			Content = checked
+		if "NRA" in Content.replace(" ", ""):
+			Content = checked
+		if "nra" in Content.replace(" ", ""):
+			Content = checked
+		if "kkk" in Content.replace(" ", ""):
+			Content = checked
+		if "ealthcare" in Content.replace(" ", ""):
+			Content = checked
+		if "mendmant" in Content.replace(" ", ""):
+			Content = checked
+		if "gun" in Content.replace(" ", ""):
+			Content = checked
+		if "ilibuster" in Content.replace(" ", ""):
+			Content = checked
+		if "hite house" in Content.replace(" ", ""):
+			Content = checked
+		if "hite House" in Content.replace(" ", ""):
+			Content = checked
+		if "ederal" in Content.replace(" ", ""):
+			Content = checked
+		if "QAnon" in Content.replace(" ", ""):
+			Content = checked
+		if "ovid" in Content.replace(" ", ""):
+			Content = checked
+		if "accin" in Content.replace(" ", ""):
+			Content = checked
+		if "ommunis" in Content.replace(" ", ""):
+			Content = checked
+		if "Asian" in Content.replace(" ", ""):
+			Content = checked
+		if "union" in Content.replace(" ", ""):
+			Content = checked
+		if "tudent debt" in Content.replace(" ", ""):
+			Content = checked
+		if "tudent Debt" in Content.replace(" ", ""):
+			Content = checked
+		if "rotest" in Content.replace(" ", ""):
+			Content = checked
+		if "orporation" in Content.replace(" ", ""):
+			Content = checked
+		if "ight wing" in Content.replace(" ", ""):
+			Content = checked
+		if "eft wing" in Content.replace(" ", ""):
+			Content = checked
+		if "ight-wing" in Content.replace(" ", ""):
+			Content = checked
+		if "eft-wing" in Content.replace(" ", ""):
+			Content = checked 
+		if "mmigrant" in Content.replace(" ", ""):
+			Content = checked
+		if "edicare" in Content.replace(" ", ""):
+			Content = checked
+		if "edicaid" in Content.replace(" ", ""):
+			Content = checked
+		if "ecretary" in Content.replace(" ", ""):
+			Content = checked
+		if "ilitary" in Content.replace(" ", ""):
+			Content = checked
+		if "Obama" in Content.replace(" ", ""):
+			Content = checked
+		if "obama" in Content.replace(" ", ""):
+			Content = checked
+		if "un control" in Content.replace(" ", ""):
+			Content = checked
+		if "azi" in Content.replace(" ", ""):
+			Content = checked
+		if "iot" in Content.replace(" ", ""):
+			Content = checked
+		if "USDA" in Content.replace(" ", ""):
+			Content = checked
+		if "usda" in Content.replace(" ", ""):
+			Content = checked
+		if "FDA" in Content.replace(" ", ""):
+			Content = checked
+		if "fda" in Content.replace(" ", ""):
+			Content = checked
+		if "ascis" in Content.replace(" ", ""):
+			Content = checked
+		if "harma" in Content.replace(" ", ""):
+			Content = checked
+		if "FBI" in Content.replace(" ", ""):
+			Content = checked
+		if "Tax" in Content.replace(" ", ""):
+			Content = checked
+		if "uthoritarian" in Content.replace(" ", ""):
+			Content = checked
+		if "olitician" in Content.replace(" ", ""):
+			Content = checked
+		if "onservative" in Content.replace(" ", ""):
+			Content = checked
+		if "uslim" in Content.replace(" ", ""):
+			Content = checked
+		if "lection" in Content.replace(" ", ""):
+			Content = checked
+		if "hristian" in Content.replace(" ", ""):
+			Content = checked
+		if "arxis" in Content.replace(" ", ""):
+			Content = checked
+		if "narch" in Content.replace(" ", ""):
+			Content = checked
+		if "OVID" in Content.replace(" ", ""):
+			Content = checked
+		if "oronavirus" in Content.replace(" ", ""):
+			Content = checked
+		if "elhi" in Content.replace(" ", ""):
+			Content = checked
+		if "media" in Content.replace(" ", ""):
+			Content = checked
+		if "Media" in Content.replace(" ", ""):
+			Content = checked
+		if "United States" in Content.replace(" ", ""):
+			Content = checked
+		if "hreat" in Content.replace(" ", ""):
+			Content = checked
+		if "AOC" in Content.replace(" ", ""):
+			Content = checked
+		if "aoc" in Content.replace(" ", ""):
+			Content = checked
+		if "God " in Content.replace(" ", ""):
+			Content = checked
+		if "ibertarian" in Content.replace(" ", ""):
+			Content = checked
+		if "iberal" in Content.replace(" ", ""):
+			Content = checked
+		if "1A" in Content.replace(" ", ""):
+			Content = checked
+		if "2A" in Content.replace(" ", ""):
+			Content = checked
+		if "saki" in Content.replace(" ", ""):
+			Content = checked
+		if "order" in Content.replace(" ", ""):
+			Content = checked
+		if "un control" in Content.replace(" ", ""):
+			Content = checked
+		if "eftist" in Content.replace(" ", ""):
+			Content = checked
+		if "mpeach" in Content.replace(" ", ""):
+			Content = checked
+		if "ountry" in Content.replace(" ", ""):
+			Content = checked
+		if "ountries" in Content.replace(" ", ""):
+			Content = checked
+		if "partisan" in Content.replace(" ", ""):
+			Content = checked
+		if "Partisan" in Content.replace(" ", ""):
+			Content = checked
+		if "lobal" in Content.replace(" ", ""):
+			Content = checked
+		if "auci" in Content.replace(" ", ""):
+			Content = checked
+		if "Cox" in Content.replace(" ", ""):
+			Content = checked
+		if "reen party" in Content.replace(" ", ""):
+			Content = checked
+		if "reen Party" in Content.replace(" ", ""):
+			Content = checked
+		if "ncap" in Content.replace(" ", ""):
+			Content = checked
+		if "rexit" in Content.replace(" ", ""):
+			Content = checked
+		if "onfederate" in Content.replace(" ", ""):
+			Content = checked
+		if "flag" in Content.replace(" ", ""):
+			Content = checked
+		if "IRS" in Content.replace(" ", ""):
+			Content = checked
+		if "ardon" in Content.replace(" ", ""):
+			Content = checked
+		if "Build Back Better" in Content.replace(" ", ""):
+			Content = checked
+		if "uild back better" in Content.replace(" ", ""):
+			Content = checked
+		if "nigge" in Content.replace(" ", ""):
+			Content = checked
+		if "Nigge" in Content.replace(" ", ""):
+			Content = checked    
+		if "range man" in Content.replace(" ", ""):
+			Content = checked
+		if "range Man" in Content.replace(" ", ""):
+			Content = checked
+		if "hristian" in Content.replace(" ", ""):
+			Content = checked
+		if "ewish" in Content.replace(" ", ""):
+			Content = checked
+		if "Jew" in Content.replace(" ", ""):
+			Content = checked
+		if "jew" in Content.replace(" ", ""):
+			Content = checked
+		if "Jesus do" in Content.replace(" ", ""):
+			Content = checked
+		if "Jesus said" in Content.replace(" ", ""):
+			Content = checked
+		if "ace theory" in Content.replace(" ", ""):
+			Content = checked
+		if "ace Theory" in Content.replace(" ", ""):
+			Content = checked
+		if "ar on Drugs" in Content.replace(" ", ""):
+			Content = checked
+		if "ar on drugs" in Content.replace(" ", ""):
+			Content = checked
+		if "leepy Joe" in Content.replace(" ", ""):
+			Content = checked
+		if "leepy joe" in Content.replace(" ", ""):
+			Content = checked
+		if "aetz" in Content.replace(" ", ""):
+			Content = checked
+		if "allot" in Content.replace(" ", ""):
+			Content = checked
+		if "stablish" in Content.replace(" ", ""):
+			Content = checked
+		if "he news" in Content.replace(" ", ""):
+			Content = checked
+		if "ox news" in Content.replace(" ", ""):
+			Content = checked
+		if "ox News" in Content.replace(" ", ""):
+			Content = checked
+		if "ransphob" in Content.replace(" ", ""):
+			Content = checked
+		if " rights" in Content.replace(" ", ""):
+			Content = checked
+		if "Rights" in Content.replace(" ", ""):
+			Content = checked
+		if "egulat" in Content.replace(" ", ""):
+			Content = checked
+		if "ender" in Content.replace(" ", ""):
+			Content = checked
+		if "olocaust" in Content.replace(" ", ""):
+			Content = checked
+		if "eminis" in Content.replace(" ", ""):
+			Content = checked
+		if "elfare" in Content.replace(" ", ""):
+			Content = checked
+		if "hapiro" in Content.replace(" ", ""):
+			Content = checked
+		if "ucker Carlson" in Content.replace(" ", ""):
+			Content = checked
+		if "ucker carlson" in Content.replace(" ", ""):
+			Content = checked
+		if "itch Mcconnel" in Content.replace(" ", ""):
+			Content = checked
+		if "itler" in Content.replace(" ", ""):
+			Content = checked
+		if "anon" in Content.replace(" ", ""):
+			Content = checked
+		if "eagan" in Content.replace(" ", ""):
+			Content = checked
+		if " war" in Content.replace(" ", ""):
+			Content = checked
+		if "War " in Content.replace(" ", ""):
+			Content = checked
+		if "ussia" in Content.replace(" ", ""):
+			Content = checked
+		if "nvade" in Content.replace(" ", ""):
+			Content = checked
+		if "roops" in Content.replace(" ", ""):
+			Content = checked
+		if "WW3" in Content.replace(" ", ""):
+			Content = checked
+		if "ar 3" in Content.replace(" ", ""):
+			Content = checked
+		if "ar III" in Content.replace(" ", ""):
+			Content = checked
+		if "WWIII" in Content.replace(" ", ""):
+			Content = checked
+		if "JB" in Content.replace(" ", ""):
+			Content = checked
+		if "jb" in Content.replace(" ", ""):
+			Content = checked
+		if "left" in Content.replace(" ", ""):
+			Content = checked
+		if "Left" in Content.replace(" ", ""):
+			Content = checked		
+		if Content == checked:
+			Content.delete()												
+		else:
+			Content = Content
+		if serializer.is_valid():
+			if serializer.validated_data['IsRepost'] != True and serializer.validated_data['IsLike'] == False and serializer.validated_data['IsComment'] == False:
+				serializer.validated_data['Author'] = prepared_data_variable
+				serializer.validated_data['Author_Profile'] = request.user.profile
+				serializer.validated_data['Content'] = Content
+				serializer.validated_data['Image'] = serializer.validated_data['ImageString']
+				serializer.save()
+			elif serializer.validated_data['IsRepost'] != False and serializer.validated_data['IsLike'] == False and serializer.validated_data['IsComment'] == False:
+				post_id = request.data.get('id')
+				pp.pprint('Reposted')
+				#repost(post_id, user)
+				return Response()
+			elif serializer.validated_data['IsLike'] != False and serializer.validated_data['IsComment'] == False:
+				post_id = request.data.get('id')
+				pp.pprint(user.id)
+				like(post_id, user)
+				return Response()
+			elif serializer.validated_data['IsComment'] != False and serializer.validated_data['IsLike'] != True:
+				post_id = request.data.get('id')
+				pp.pprint('comment')
+				pp.pprint(post_id)
+				#createComment(request, post_id, data)
+				return Response()					    
+		return Response(serializer.data)
    
-    def put(self, request):
-        form = PostForm(request.POST or None, request.FILES or None)
-        serializer = PostSerializer(data=request.data)
-        #serializer.data.LikeCount = 15
-        #post.Likes.add(request.user)
-        #post.LikeCount += 1
-        if serializer.is_valid():
-            serializer.data['LikeCount'] = 15
-            serializer.save()
-        return Response(serializer.data)	
+	def put(self, request):
+		username = request.user.username
+		pp = pprint.PrettyPrinter(indent=4)
+		form = PostForm(request.POST or None, request.FILES or None)
+		serializer = PostSerializer(data=request.data)
+		post_id = request.data.get('id')
+		like(request, post_id, username)
+		pp.pprint('putt')
+		#serializer.data.LikeCount = 15
+		#post.Likes.add(request.user)
+		#post.LikeCount += 1
+		if serializer.is_valid():
+			post_id = request.data.get('id')
+			like(request, post_id, username)
+			pp.pprint('putt')
+			return Response()
+		return Response(serializer.data)	
 
 class MessageViewSet(APIView):
     queryset = Message.objects.all()

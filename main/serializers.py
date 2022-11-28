@@ -104,19 +104,44 @@ class ProfileSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
 	Author = serializers.SerializerMethodField()
 	Author_Profile_Picture = serializers.SerializerMethodField()
-	id = serializers.SerializerMethodField()
+	Author_Display_Name = serializers.SerializerMethodField()
+	Image = serializers.SerializerMethodField()
+	Image2 = serializers.SerializerMethodField()
+	Image3 = serializers.SerializerMethodField()
+	Image4 = serializers.SerializerMethodField()
+	RepostAuthor = serializers.SerializerMethodField()
 	def get_Author(self, Post):
-		if Post.Author.username:
+		if Post.Author:
 			return Post.Author.username
-		return default
-	def get_id(self, Post):
-		if Post.id:
-			return Post.id
-		return default
+		return ""
 	def get_Author_Profile_Picture(self, Post):
-		if Post.Author.Profile.Profile_Picture:
-			return Post.Author.Profile.Profile_Picture.url
-		return default               
+		if Post.Author.profile.Profile_Picture:
+			return Post.Author.profile.Profile_Picture.url
+		return ""
+	def get_Author_Display_Name(self, Post):
+		if Post.Author.profile.Display_Name:
+			return Post.Author.profile.Display_Name
+		return ""
+	def get_Image(self, Post):
+		if Post.Image:
+			return Post.Image.url
+		return ""
+	def get_Image2(self, Post):
+		if Post.Image2:
+			return Post.Image2.url
+		return ""
+	def get_Image3(self, Post):
+		if Post.Image3:
+			return Post.Image3.url
+		return ""
+	def get_Image4(self, Post):
+		if Post.Image4:
+			return Post.Image4.url
+		return ""			
+	def get_RepostAuthor(self, Post):
+		if Post.RepostAuthor:
+			return Post.RepostAuthor.profile.Display_Name
+		return ""	                                 
    
 
 	class Meta:
@@ -127,12 +152,19 @@ class PostSerializer(serializers.ModelSerializer):
 			'Author',
 			'Author_Profile',
 			'Author_Profile_Picture',
+			'Author_Display_Name',
 			'Content',
 			'LikeCount',
 			'ReshareCount',
 			'Image',
+			'Image2',
+			'Image3',
+			'Image4',
+			'ImageString',
 			'CommentCount',
 			'IsRepost',
+			'IsLike',
+			'IsComment',
 			'UserHasLiked',
 			'UserHasReposted',
 			'Reposted',
@@ -143,12 +175,7 @@ class PostSerializer(serializers.ModelSerializer):
 			'Flags',
 			'Created',
 			'Req_User_Follows_Author',
-		)
-
-	def to_representation(self, data):
-		data = super(PostSerializer, self).to_representation(data)
-		data['LikeCount'] = 15
-		return data    
+		) 
 
 
 class MessageSerializer(serializers.ModelSerializer):
