@@ -90,16 +90,8 @@ class Job(models.Model):
     def __str__(self): 
         return self.Description
 
-
-class User_Groups(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    Label = models.CharField(max_length=50)
-    Members = models.ManyToManyField(User, blank=True, related_name="members")
+ 
     
-    def __unicode__(self):
-       return self.Label     
-       
-
 class User_Groups(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     Label = models.CharField(max_length=50)
