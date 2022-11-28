@@ -146,7 +146,6 @@ class PostSerializer(serializers.ModelSerializer):
 			'Author',
 			'Author_Profile',
 			'Author_Profile_Picture',
-			'Author_Display_Name',
 			'Content',
 			'LikeCount',
 			'ReshareCount',
