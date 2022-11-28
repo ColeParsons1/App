@@ -103,7 +103,6 @@ class ProfileSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
 	Author = serializers.SerializerMethodField()
 	Author_Profile_Picture = serializers.SerializerMethodField()
-	Author_Display_Name = serializers.SerializerMethodField()
 	Image = serializers.SerializerMethodField()
 	Image2 = serializers.SerializerMethodField()
 	Image3 = serializers.SerializerMethodField()
@@ -116,10 +115,6 @@ class PostSerializer(serializers.ModelSerializer):
 	def get_Author_Profile_Picture(self, Post):
 		if Post.Author.profile.Profile_Picture:
 			return Post.Author.profile.Profile_Picture.url
-		return ""
-	def get_Author_Display_Name(self, Post):
-		if Post.Author.profile.Display_Name:
-			return Post.Author.profile.Display_Name
 		return ""
 	def get_Image(self, Post):
 		if Post.Image:

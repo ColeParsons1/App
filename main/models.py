@@ -99,7 +99,6 @@ class Post(models.Model):
     Author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     Author_Profile = models.ForeignKey('main.Profile', on_delete=models.CASCADE, blank=True, null=True)
     Author_Profile_Picture = models.CharField(max_length=300, blank=True, null=True)
-    Author_Display_Name = models.CharField(max_length=300, blank=True, null=True)
     Topic = models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True, related_name="Topic")
     Content = models.CharField(max_length=300, default=uuid.uuid1)
     Image = models.ImageField(blank=True, null=True)
