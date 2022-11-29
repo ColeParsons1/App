@@ -1103,7 +1103,7 @@ class PostViewSet(APIView):
 		viewer = request.user
 			#return i
 		#d = .aut                         
-		posts = Post.objects.filter(Q(Author__profile__User_Followers__username__icontains=viewer, IsComment=False)).order_by('id').reverse()
+		posts = Post.objects.all().order_by('id').reverse()
 
 		serializer = PostSerializer(posts, many=True)
 		return Response(serializer.data)
