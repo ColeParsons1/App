@@ -75,6 +75,6 @@ urlpatterns = [
     path('(<username>[a-zA-Z0-9]+)/remove_private/', views.go_public, name='go_public'),
     path('edit_profile/', views.edit_profile, name='edit_profile'),
     path('report/', views.report, name='report'),
-    ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns = format_suffix_patterns(urlpatterns)     
