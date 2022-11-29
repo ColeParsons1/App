@@ -83,7 +83,7 @@ def index(request):
     post_list = zip(all_posts, all_reposts)
     form = PostForm(request.POST or None)
     dmForm = MessageForm(request.POST or None)
-    group_form = GroupForm(request.POST or None)
+    #group_form = GroupForm(request.POST or None)
     Author = request.user
     
     if request.method == 'POST':
@@ -98,7 +98,7 @@ def index(request):
     else:
         form = PostForm()    
         dmForm = MessageForm()
-        group_form = GroupForm()
+        #group_form = GroupForm()
         
     context = {
         'User': users,
@@ -110,7 +110,7 @@ def index(request):
         'all_liked': all_liked,
         'post_list': post_list,
         'dmForm': dmForm,
-        'group_form': group_form,
+        #'group_form': group_form,
     }
     template = loader.get_template('main/index.html')
     
