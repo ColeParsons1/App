@@ -30,7 +30,6 @@ class TemplateSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
 	Job_Type = serializers.SerializerMethodField()
 	Assigned_Lugger = serializers.SerializerMethodField()
-	Image = serializers.SerializerMethodField()
 	def get_Job_Type(self, Job):
 		if Job.Job_Type:
 			return Job.Job_Type.Label
@@ -39,11 +38,7 @@ class JobSerializer(serializers.ModelSerializer):
 		if Job.Assigned_Lugger:
 			return Job.Assigned_Lugger.username
 		else:
-			return "None"
-	def get_Image(self, Job):
-		if Job.Image:
-			return Job.Image.url
-		return ""		
+			return "None"		
 
 		
 	class Meta:
@@ -55,7 +50,6 @@ class JobSerializer(serializers.ModelSerializer):
 		'Description',
 		'Load_Weight',
 		'Pieces',
-		'Image',
 		'ImageString',
 		'Pickup_Address',
 		'Destination_Address',
