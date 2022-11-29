@@ -33,7 +33,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
-    path('/', include('main.urls')),
+    path('', include('main.urls')),
     path('admin/', admin.site.urls), #path('admin_tools_stats/', include('admin_tools_stats.urls')),
     path('jobs/', views.JobViewSet.as_view()),
     path('add/', views.AddJobViewSet.as_view()),
