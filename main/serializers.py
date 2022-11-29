@@ -118,7 +118,7 @@ class PostSerializer(serializers.ModelSerializer):
 		return ""
 	def get_Image(self, Post):
 		if Post.Image:
-			return "http://146.190.222.176:8000" + Post.Image.url
+			return "http://146.190.222.176:8000" + Post.ImageString
 		return default
 	def get_Image2(self, Post):
 		if Post.Image2:
