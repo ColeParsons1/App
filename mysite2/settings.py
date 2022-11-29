@@ -186,6 +186,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51M1yvHABMyiljblNyv0PsM2OOAk0J6tF92msKqQwD3mHGDrSYY6fvo0lfN2pry5qsetXEzB0beuEA8bJAAOcPUds00XXA3nFrH'
 STRIPE_SECRET_KEY = 'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBqaJvMqvwQ5F0H1Gt7zF2TnlYRWZNVEpKmcbcRNd00y0elqhRX'
