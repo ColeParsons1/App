@@ -997,6 +997,7 @@ def addJobToSchedule(request, job_id):
     return render(request=request, template_name="main/login.html", context={"login_form":job})
 
 
+
 def login_request(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
@@ -2019,7 +2020,7 @@ class CreateStripeAccountView(View):
 
 class TransferBalanceToStripeView(View):
     def post(self, request, *args, **kwargs):
-        api.send_sms(body='test', from_phone='+18288967682', to=['+18288967682'])
+        
         stripe.api_key = 'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBqaJvMqvwQ5F0H1Gt7zF2TnlYRWZNVEpKmcbcRNd00y0elqhRX'
         req_json = json.loads(request.body)
 
