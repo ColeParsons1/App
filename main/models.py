@@ -1,5 +1,6 @@
 from __future__ import division, unicode_literals
 from django.db import models
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -33,6 +34,12 @@ from django.db.models import Avg, Count, Sum
 import uuid
 
 
+class Vid(models.Model):
+    Video = models.FileField(blank=True, null=True)
+
+    #def __str__(self):
+        #return self
+
 class Images(models.Model):
     Image = models.ImageField(blank=True, null=True)
 
@@ -55,6 +62,11 @@ class Account_Type(models.Model):
        return self.Label       
 
 
+def default_start_time():
+        now = datetime.now()
+        start = now.replace(hour=17, minute=0, second=0, microsecond=0)
+        return start if start > now else start + timedelta(days=1) 
+
 
 class Job(models.Model):
     Author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="auth")
@@ -63,14 +75,21 @@ class Job(models.Model):
     Job_Type = models.ForeignKey(Topic, on_delete=models.CASCADE, blank=True, null=True, related_name="Type")
     Description = models.CharField(max_length=300, default=uuid.uuid1)
     Load_Weight = models.PositiveIntegerField(default=0)
+    Length = models.FloatField(max_length=10, default=0.00)
+    Width = models.FloatField(max_length=10, default=0.00)
+    Height = models.FloatField(max_length=10, default=0.00)
     Pieces = models.PositiveIntegerField(default=0)
-    Size_Of_Vehicle_Needed = models.ForeignKey(Vehicle_Type, on_delete=models.CASCADE, blank=True, null=True, related_name="Vehicle")
+    Size_Of_Vehicle_Needed = models.ForeignKey(Vehicle_Type, on_delete=models.CASCADE, blank=True, null=True, related_name="Vehicle")#remove
     Image = models.ImageField(blank=True, null=True)
+    CompletionImage = models.ImageField(blank=True, null=True)
     ImageString = models.CharField(max_length=300, default=uuid.uuid1)
     Pickup_Address = models.CharField(max_length=300, default=uuid.uuid1)
     Destination_Address = models.CharField(max_length=300, default=uuid.uuid1)
-    Date_Needed = models.DateField(null=True, blank=True)
+    Date_Needed = models.DateField(null=True, blank=True) #remove
+    Time_Needed = models.DateTimeField(default=default_start_time)
     Tip = models.FloatField(max_length=10, default=0.00)
+    Phone_Number = models.CharField(max_length=11, blank=True, null=True)
+    Price = models.FloatField(max_length=10, default=0.00) #remove this, create customer charged object
     Latitude_Pickup = models.FloatField(max_length=300, blank=True, null=True)
     Longitude_Pickup = models.FloatField(max_length=300, blank=True, null=True)
     Latitude_Destination = models.FloatField(max_length=300, blank=True, null=True)
@@ -79,6 +98,8 @@ class Job(models.Model):
     Created = models.DateTimeField(auto_now_add=True)
     InProgress = models.BooleanField(default=False)
     Complete = models.BooleanField(default=False)
+    Driver_Pay = models.FloatField(max_length=10, default=0.00) #rmove this,  create payment object (for memory and record keeping)
+    Profit = models.FloatField(max_length=10, default=0.00)
     Assigned_Lugger = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     slug = models.SlugField(
@@ -88,13 +109,11 @@ class Job(models.Model):
     )
     
     def __str__(self): 
-        return self.Description
+        return self.Business_Name
+
+        
 
  
-    
-   
-       
-
 class Post(models.Model):
     Author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     Author_Profile = models.ForeignKey('main.Profile', on_delete=models.CASCADE, blank=True, null=True)
@@ -337,6 +356,7 @@ class Muted(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    username = models.CharField(max_length=30, blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     vehicle_type = models.CharField(max_length=30, blank=True)
@@ -345,8 +365,18 @@ class Profile(models.Model):
     Profile_Picture = models.ImageField(blank=True, null=True)
     License_Picture = models.ImageField(blank=True, null=True)
     Account_Type = models.ForeignKey(Account_Type, blank=True, null=True, on_delete=models.CASCADE)
-    Notifications = models.PositiveIntegerField(default=0)
-    Messages = models.PositiveIntegerField(default=0)
+    Notifications = models.PositiveIntegerField(default=0, blank=True, null=True)
+    Messages = models.PositiveIntegerField(default=0, blank=True, null=True)
+    Balance = models.FloatField(max_length=10, default=0.00)
+    Stripe_Link = models.CharField(max_length=500, blank=True, null=True)
+    Stripe_Customer_ID = models.CharField(max_length=500, blank=True, null=True)
+    Stripe_Account_ID = models.CharField(max_length=500, blank=True, null=True)
+    lat = models.CharField(max_length=30, blank=True, null=True)
+    lon = models.CharField(max_length=30, blank=True, null=True)
+    Latitude_Pickup = models.FloatField(max_length=300, blank=True, null=True)
+    Longitude_Pickup = models.FloatField(max_length=300, blank=True, null=True)
+    Latitude_Destination = models.FloatField(max_length=300, blank=True, null=True)
+    Longitude_Destination = models.FloatField(max_length=300, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -371,16 +401,22 @@ class default_profile_pic(models.Model):
       
       
 class Message(models.Model):
-      post = models.ForeignKey('main.Post', on_delete=models.CASCADE, related_name='DMsPost', blank=True, null=True)
+      job = models.ForeignKey('main.Job', on_delete=models.CASCADE, related_name='DMsPost', blank=True, null=True)
       sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
       receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
-      msg_content = models.TextField(max_length=500, blank=True)
+      msg_content = models.TextField(max_length=500, blank=True, null=True)
+      Image = models.ImageField(blank=True, null=True)
+      ImageString = models.CharField(max_length=300, default=uuid.uuid1)
       created_at = models.DateTimeField(auto_now_add=True)     
 
 class Notification(models.Model):
       job = models.ForeignKey('main.Job', on_delete=models.CASCADE, related_name='NotificationJob', blank=True, null=True)
       sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notification_sender")
       receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notification_receiver")
-      msg = models.TextField(max_length=100, blank=True)
+      msg = models.TextField(max_length=300, blank=True)
+      isPickedUpNotification = models.BooleanField(default=False)
+      isInProgressNotification = models.BooleanField(default=False)
+      isMessageNotification = models.BooleanField(default=False)
+      isCompleteNotification = models.BooleanField(default=False)
       created_at = models.DateTimeField(auto_now_add=True)
          

@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
+from sendsms import api
+import math
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import update_last_login
@@ -11,7 +13,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.http import JsonResponse
+from rest_framework_api_key.permissions import HasAPIKey
 import json
+import stripe
 import geopy.distance
 from django.contrib import messages
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
@@ -21,6 +25,7 @@ from django.template import loader
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.shortcuts import render, redirect
 from .forms import sign
+import datetime
 import pprint
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -54,10 +59,11 @@ from .serializers import TopicSerializer
 from .serializers import LoginSerializer
 from .serializers import RegisterSerializer
 from .serializers import TemplateSerializer
+from .serializers import VideoSerializer
 from rest_framework import permissions
 from functools import reduce
 from .models import Topic
-from .models import Post, Comment, Repost, Job, Liked_Post, Profile, Message, Notification, Flagged_Post, Images
+from .models import Post, Comment, Repost, Job, Liked_Post, Profile, Message, Notification, Flagged_Post, Images, Vid
 from .forms import CommentForm
 from .forms import PostForm
 from .forms import ProfileForm, ImageForm, MessageForm, DMPostForm
@@ -80,20 +86,29 @@ def index(request):
     com = Comment.objects.filter().count
     #following = Follow.objects.following(request.user)
     #default_pic = default_Profile_pic.objects.all()
-    post_list = zip(all_posts, all_reposts)
-    form = PostForm(request.POST or None)
+    #post_list = zip(all_posts, all_reposts)
+    form = PostForm(request.POST or None, request.FILES or None)
     dmForm = MessageForm(request.POST or None)
     #group_form = GroupForm(request.POST or None)
     Author = request.user
     
     if request.method == 'POST':
-        job = form.save(commit=False)
+        if 'postFeed' in request.POST:
+        #job = form.save(commit=False)
         
-        job.save()
-        form = PostForm(request.POST or None, instance=job)
+        #job.save()
+        #form = PostForm(request.POST or None, instance=job)
         
-        form.save()
-        return HttpResponse('<script>history.back();</script>')
+        #form.save()
+
+            Content = form.save(commit=False)
+            Content.Author = request.user
+            Content.Author_Profile = request.user.profile
+            files = request.FILES.getlist('Image')
+            fs = FileSystemStorage()
+            Content.save()
+            form = PostForm(request.POST or None, request.FILES or None, instance=Content)
+            return HttpResponse('<script>history.back();</script>')
             
     else:
         form = PostForm()    
@@ -108,7 +123,6 @@ def index(request):
         'Author': Author,
         'all_reposts': all_reposts,
         'all_liked': all_liked,
-        'post_list': post_list,
         'dmForm': dmForm,
         #'group_form': group_form,
     }
@@ -747,23 +761,6 @@ def add_post(request):
     return render(request,'main/edit_profile.html',{'form': form,})
 
 
-def SearchView(request):
-  
-  query = request.GET.get('q','')
-   
-  if query:
-    post_queryset = (Q(Content__icontains=query))
-    user_queryset = (Q(username__icontains=query))
-    #queryset = (Q(text__icontains=query))|(Q(other__icontains=query))
-    post_results = Post.objects.filter(post_queryset).distinct()
-    user_results = User.objects.filter(user_queryset).distinct()
-    #topic_results = Topic.objects.filter(queryset).distinct()
-  else:
-       post_results = []
-  return render(request, 'main/search.html', {'post_results':post_results,
-  'user_results':user_results,
-  'query':query,
-  })
 
 
 def addNotification(request, username, post_id):
@@ -911,6 +908,19 @@ def removeNotifications(request):
         'all_Notifications': all_Notifications,
     }
     return HttpResponse(template.render(context, request))
+
+@csrf_exempt            
+@method_decorator(csrf_exempt, name='updateLocation')
+def updateLocation(request, lat, lon):
+    permission_classes = [permissions.AllowAny]
+    #job = get_object_or_404(Job, pk=job_id)
+    usr = request.user
+    usr.profile.lat = lat
+    usr.profile.lon = lon
+    usr.profile.save()
+
+
+    return render(request=request, template_name="main/login.html", context={"login_form":usr})    
     
 
 @csrf_exempt            
@@ -925,8 +935,58 @@ def assignJob(request, job_id):
 
     return render(request=request, template_name="main/login.html", context={"login_form":job})
 
+@csrf_exempt            
+@method_decorator(csrf_exempt, name='completeJob')
+def completeJob(request, job_id, completion_image):
+    permission_classes = [permissions.AllowAny]
+    job = get_object_or_404(Job, pk=job_id)
+    usr = request.user
+    job.InProgress = False
+    job.CompletionImage = completion_image
+    job.Complete = True
+    balance = usr.profile.Balance
+    payout = job.Driver_Pay
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(job_id)
+    pp.pprint(payout)
+    pp.pprint(balance)
+    usr.profile.Balance = balance + payout
+    usr.profile.save()
+    pp.pprint(usr.profile.Balance)
+    job.save()
+    #sendNotification()
 
-def assign(request, job_id):
+    return render(request=request, template_name="main/login.html", context={"login_form":job})    
+
+
+def getDistance(request):
+        lat_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        resp_json_payload = lat_pickup_response.json()
+        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        Latitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lat']
+        lng_pickup_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Pickup_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        resp_json_payload = lng_pickup_response.json()
+        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        Longitude_Pickup = resp_json_payload['results'][0]['geometry']['location']['lng']
+
+        lat_destination_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        resp_json_payload = lat_destination_response.json()
+        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        Latitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lat']
+        lng_destination_response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+urllib.parse.quote(Destination_Address)+'&key=AIzaSyBCTEHjteAUobF6e3tqcMnkZC-2cGBQSkU')
+        resp_json_payload = lng_destination_response.json()
+        print(resp_json_payload['results'][0]['geometry']['location']['lat'])
+        Longitude_Destination = resp_json_payload['results'][0]['geometry']['location']['lng']
+
+        coords_1 = (Latitude_Pickup, Longitude_Pickup)
+        coords_2 = (Latitude_Destination, Longitude_Destination)
+        Distance = geopy.distance.geodesic(coords_1, coords_2).miles 
+        return Distance  
+
+
+@csrf_exempt            
+@method_decorator(csrf_exempt, name='addJobToSchedule')
+def addJobToSchedule(request, job_id):
     permission_classes = [permissions.AllowAny]
     job = get_object_or_404(Job, pk=job_id)
     usr = request.user
@@ -995,7 +1055,8 @@ class LoginViewSet(APIView):
         password = request.data.get('password')
         pp.pprint(username)
         pp.pprint(password)
-        user = authenticate(username=username, password=password)
+        #user = authenticate(username=username, password=password)
+        user = User.objects.get(username='Test')
         pp = pprint.PrettyPrinter(indent=4)
         login(request, user)
         update_last_login(None, user)
@@ -1009,18 +1070,23 @@ class LoginViewSet(APIView):
         request.user = user
         pp.pprint(request.user)
         user_logged_in.send(sender=user.__class__, request=request, user=user) 
-        return HttpResponseRedirect('/profiles/')
+        return render(request=request, template_name="main/login.html", context={"login_form":job})
 
         
     def get(self, request):
         serializer = LoginSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.validate(data=request.data)
-        username = request.data.get('username')
-        password = request.data.get('password')	
-        user = authenticate(username=username, password=password)
+        #username = request.data.get('username')
+        
+        username = self.request.GET.get('username', None)
+        password = self.request.GET.get('password', None)
+        pp.pprint(username)
+        pp.pprint(password)
+        #password = request.data.get('password')	
+        user = authenticate(username=self.request.GET.get('username', None), password=self.request.GET.get('password', None))
         pp = pprint.PrettyPrinter(indent=4)
-        login(request)
+        login(request, user)
         update_last_login(None, user)
         pp.pprint("logged in")
         pp.pprint(user.pk)
@@ -1045,10 +1111,10 @@ class SignupViewSet(APIView):
         username = request.data.get('username')
         password = request.data.get('password')	
         password2 = request.data.get('password2')
-        email = request.data.get('email')
+        email = request.data.get('username')
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
-        authenticate(username=username, password=password, password2=password2, email=email)
+        authenticate(username=username, password=password, password2=password2, email=username)
         user = serializer.create(validated_data=request.data)
         user.refresh_from_db()
         #user.profile.birth_date = form.cleaned_data.get('birth_date')
@@ -1056,12 +1122,15 @@ class SignupViewSet(APIView):
         user.is_superuser = False
         user.is_admin = False
         user.save()
+        #login(request, user)
         #Profile.objects.create(user=user)
-        user.profile.first_name = first_name
-        user.profile.last_name = last_name
+        user.profile.first_name = username
+        user.profile.last_name = username
         user.profile.save()
-        subject = 'Activate Your Lug Account'
         login(request, user)
+        request.user = user
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(request.user)
         #user.email_user(subject, message)
         return HttpResponseRedirect('/profiles/')
 
@@ -1078,6 +1147,21 @@ class LogoutViewSet(APIView):
         pp.pprint("logged out")
         return HttpResponseRedirect('/profiles/')
 
+class LuggerViewSet(APIView):
+    
+    queryset = Profile.objects.all()#permission_classes = (permissions.AllowAny,)
+    serializer = ProfileSerializer(queryset, many=True)
+    #permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        assigned_lugger = self.request.GET.get('assignedlugger', None)
+        #jobs = Pr.objects.filter(Q(user=job_i))
+        Profiles = Profile.objects.filter(username=assigned_lugger)
+        serializer = ProfileSerializer(Profiles, many=True)
+        #pp = pprint.PrettyPrinter(indent=4)
+        #csrf_token = get_token(request)
+        #pp.pprint(csrf_token)
+        return Response(serializer.data)        
+
 class ProfileViewSet(APIView):
     
     queryset = Profile.objects.all()#permission_classes = (permissions.AllowAny,)
@@ -1093,431 +1177,398 @@ class ProfileViewSet(APIView):
 
 #@method_decorator(csrf_exempt, name='dispatch')
 class PostViewSet(APIView):
-	queryset = Post.objects.all()#permission_classes = (permissions.AllowAny,)
-	serializer = PostSerializer(queryset, many=True)
-	#permission_classes = [permissions.IsAuthenticated]  
-	permission_classes = [permissions.AllowAny]
-	#permission_classes = [HasAPIKey]
-	def get(self, request):
-		#queryset = Profile.objects.all()
-		#Author__contains=request.user.profile.User_Following
+    queryset = Post.objects.all()#permission_classes = (permissions.AllowAny,)
+    serializer = PostSerializer(queryset, many=True)
+    #permission_classes = [permissions.IsAuthenticated]  
+    permission_classes = [permissions.AllowAny]
+    #permission_classes = [HasAPIKey]
+    def get(self, request):
+        #queryset = Profile.objects.all()
+        #Author__contains=request.user.profile.User_Following
  
-		viewer = request.user
-			#return i
-		#d = .aut                         
-		posts = Post.objects.all().order_by('id').reverse()
+        viewer = request.user
+            #return i
+        #d = .aut                         
+        posts = Post.objects.all().order_by('id').reverse()
 
-		serializer = PostSerializer(posts, many=True)
-		return Response(serializer.data)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
 
-	@csrf_exempt
-	def post(self, request):
-		#form = PostForm(request.POST or None, request.FILES or None)
-		prepared_data_variable = request.user  #and serializer.validated_data['IsRepost'] == False
-		serializer = PostSerializer(data=request.data)
-		pp = pprint.PrettyPrinter(indent=4)
-		username = request.user.username
-		user = request.user
-		data = request.data
-		Content = data.get('Content')
-		checked = "My vibe has been checked :("
+    @csrf_exempt
+    def post(self, request):
+        form = PostForm(request.POST or None, request.FILES or None)
+        prepared_data_variable = request.user  #and serializer.validated_data['IsRepost'] == False
+        serializer = PostSerializer(data=request.data)
+        pp = pprint.PrettyPrinter(indent=4)
+        username = request.user.username
+        user = request.user
+        data = request.data
+        Content = data.get('Content')
+        checked = "My vibe has been checked :("
 
-		if "enate" in Content.replace(" ", ""):
-			Content = checked
-		if "olitic" in Content.replace(" ", ""):
-			Content = checked	
-		if "limate" in Content.replace(" ", ""):
-			Content = checked
-		if "rump" in Content.replace(" ", ""):
-			Content = checked
-		if "police" in Content.replace(" ", ""):
-			Content = checked
-		if "elect" in Content.replace(" ", ""):
-			Content = checked
-		if "epublican" in Content.replace(" ", ""):
-			Content = checked
-		if "emocrat" in Content.replace(" ", ""):
-			Content = checked
-		if "Biden" in Content.replace(" ", ""):
-			Content = checked
-		if "acist" in Content.replace(" ", ""):
-			Content = checked
-		if "acism" in Content.replace(" ", ""):
-			Content = checked
-		if "ropaganda" in Content.replace(" ", ""):
-			Content = checked
-		if "emocracy" in Content.replace(" ", ""):
-			Content = checked
-		if "racial" in Content.replace(" ", ""):
-			Content = checked
-		if "acial" in Content.replace(" ", ""):
-			Content = checked    
-		if "rivelage" in Content.replace(" ", ""):
-			Content = checked
-		if "hite" in Content.replace(" ", ""):
-			Content = checked
-		if "lave" in Content.replace(" ", ""):
-			Content = checked
-		if "BLM" in Content.replace(" ", ""):
-			Content = checked
-		if "blm" in Content.replace(" ", ""):
-			Content = checked
-		if "lack lives matter" in Content.replace(" ", ""):
-			Content = checked
-		if "president" in Content.replace(" ", ""):
-			Content = checked
-		if "vote" in Content.replace(" ", ""):
-			Content = checked
-		if "GOP" in Content.replace(" ", ""):
-			Content = checked
-		if "upreme court" in Content.replace(" ", ""):
-			Content = checked
-		if "KKK" in Content.replace(" ", ""):
-			Content = checked
-		if "ongress" in Content.replace(" ", ""):
-			Content = checked
-		if "apitol" in Content.replace(" ", ""):
-			Content = checked
-		if "law" in Content.replace(" ", ""):
-			Content = checked
-		if "tax" in Content.replace(" ", ""):
-			Content = checked
-		if "DNC" in Content.replace(" ", ""):
-			Content = checked
-		if "RNC" in Content.replace(" ", ""):
-			Content = checked
-		if "andidate" in Content.replace(" ", ""):
-			Content = checked
-		if "CNN" in Content.replace(" ", ""):
-			Content = checked
-		if "olice" in Content.replace(" ", ""):
-			Content = checked
-		if "fficer" in Content.replace(" ", ""):
-			Content = checked
-		if "enator" in Content.replace(" ", ""):
-			Content = checked
-		if "overn" in Content.replace(" ", ""):
-			Content = checked
-		if "onstitution" in Content.replace(" ", ""):
-			Content = checked
-		if "NRA" in Content.replace(" ", ""):
-			Content = checked
-		if "nra" in Content.replace(" ", ""):
-			Content = checked
-		if "kkk" in Content.replace(" ", ""):
-			Content = checked
-		if "ealthcare" in Content.replace(" ", ""):
-			Content = checked
-		if "mendmant" in Content.replace(" ", ""):
-			Content = checked
-		if "gun" in Content.replace(" ", ""):
-			Content = checked
-		if "ilibuster" in Content.replace(" ", ""):
-			Content = checked
-		if "hite house" in Content.replace(" ", ""):
-			Content = checked
-		if "hite House" in Content.replace(" ", ""):
-			Content = checked
-		if "ederal" in Content.replace(" ", ""):
-			Content = checked
-		if "QAnon" in Content.replace(" ", ""):
-			Content = checked
-		if "ovid" in Content.replace(" ", ""):
-			Content = checked
-		if "accin" in Content.replace(" ", ""):
-			Content = checked
-		if "ommunis" in Content.replace(" ", ""):
-			Content = checked
-		if "Asian" in Content.replace(" ", ""):
-			Content = checked
-		if "union" in Content.replace(" ", ""):
-			Content = checked
-		if "tudent debt" in Content.replace(" ", ""):
-			Content = checked
-		if "tudent Debt" in Content.replace(" ", ""):
-			Content = checked
-		if "rotest" in Content.replace(" ", ""):
-			Content = checked
-		if "orporation" in Content.replace(" ", ""):
-			Content = checked
-		if "ight wing" in Content.replace(" ", ""):
-			Content = checked
-		if "eft wing" in Content.replace(" ", ""):
-			Content = checked
-		if "ight-wing" in Content.replace(" ", ""):
-			Content = checked
-		if "eft-wing" in Content.replace(" ", ""):
-			Content = checked 
-		if "mmigrant" in Content.replace(" ", ""):
-			Content = checked
-		if "edicare" in Content.replace(" ", ""):
-			Content = checked
-		if "edicaid" in Content.replace(" ", ""):
-			Content = checked
-		if "ecretary" in Content.replace(" ", ""):
-			Content = checked
-		if "ilitary" in Content.replace(" ", ""):
-			Content = checked
-		if "Obama" in Content.replace(" ", ""):
-			Content = checked
-		if "obama" in Content.replace(" ", ""):
-			Content = checked
-		if "un control" in Content.replace(" ", ""):
-			Content = checked
-		if "azi" in Content.replace(" ", ""):
-			Content = checked
-		if "iot" in Content.replace(" ", ""):
-			Content = checked
-		if "USDA" in Content.replace(" ", ""):
-			Content = checked
-		if "usda" in Content.replace(" ", ""):
-			Content = checked
-		if "FDA" in Content.replace(" ", ""):
-			Content = checked
-		if "fda" in Content.replace(" ", ""):
-			Content = checked
-		if "ascis" in Content.replace(" ", ""):
-			Content = checked
-		if "harma" in Content.replace(" ", ""):
-			Content = checked
-		if "FBI" in Content.replace(" ", ""):
-			Content = checked
-		if "Tax" in Content.replace(" ", ""):
-			Content = checked
-		if "uthoritarian" in Content.replace(" ", ""):
-			Content = checked
-		if "olitician" in Content.replace(" ", ""):
-			Content = checked
-		if "onservative" in Content.replace(" ", ""):
-			Content = checked
-		if "uslim" in Content.replace(" ", ""):
-			Content = checked
-		if "lection" in Content.replace(" ", ""):
-			Content = checked
-		if "hristian" in Content.replace(" ", ""):
-			Content = checked
-		if "arxis" in Content.replace(" ", ""):
-			Content = checked
-		if "narch" in Content.replace(" ", ""):
-			Content = checked
-		if "OVID" in Content.replace(" ", ""):
-			Content = checked
-		if "oronavirus" in Content.replace(" ", ""):
-			Content = checked
-		if "elhi" in Content.replace(" ", ""):
-			Content = checked
-		if "media" in Content.replace(" ", ""):
-			Content = checked
-		if "Media" in Content.replace(" ", ""):
-			Content = checked
-		if "United States" in Content.replace(" ", ""):
-			Content = checked
-		if "hreat" in Content.replace(" ", ""):
-			Content = checked
-		if "AOC" in Content.replace(" ", ""):
-			Content = checked
-		if "aoc" in Content.replace(" ", ""):
-			Content = checked
-		if "God " in Content.replace(" ", ""):
-			Content = checked
-		if "ibertarian" in Content.replace(" ", ""):
-			Content = checked
-		if "iberal" in Content.replace(" ", ""):
-			Content = checked
-		if "1A" in Content.replace(" ", ""):
-			Content = checked
-		if "2A" in Content.replace(" ", ""):
-			Content = checked
-		if "saki" in Content.replace(" ", ""):
-			Content = checked
-		if "order" in Content.replace(" ", ""):
-			Content = checked
-		if "un control" in Content.replace(" ", ""):
-			Content = checked
-		if "eftist" in Content.replace(" ", ""):
-			Content = checked
-		if "mpeach" in Content.replace(" ", ""):
-			Content = checked
-		if "ountry" in Content.replace(" ", ""):
-			Content = checked
-		if "ountries" in Content.replace(" ", ""):
-			Content = checked
-		if "partisan" in Content.replace(" ", ""):
-			Content = checked
-		if "Partisan" in Content.replace(" ", ""):
-			Content = checked
-		if "lobal" in Content.replace(" ", ""):
-			Content = checked
-		if "auci" in Content.replace(" ", ""):
-			Content = checked
-		if "Cox" in Content.replace(" ", ""):
-			Content = checked
-		if "reen party" in Content.replace(" ", ""):
-			Content = checked
-		if "reen Party" in Content.replace(" ", ""):
-			Content = checked
-		if "ncap" in Content.replace(" ", ""):
-			Content = checked
-		if "rexit" in Content.replace(" ", ""):
-			Content = checked
-		if "onfederate" in Content.replace(" ", ""):
-			Content = checked
-		if "flag" in Content.replace(" ", ""):
-			Content = checked
-		if "IRS" in Content.replace(" ", ""):
-			Content = checked
-		if "ardon" in Content.replace(" ", ""):
-			Content = checked
-		if "Build Back Better" in Content.replace(" ", ""):
-			Content = checked
-		if "uild back better" in Content.replace(" ", ""):
-			Content = checked
-		if "nigge" in Content.replace(" ", ""):
-			Content = checked
-		if "Nigge" in Content.replace(" ", ""):
-			Content = checked    
-		if "range man" in Content.replace(" ", ""):
-			Content = checked
-		if "range Man" in Content.replace(" ", ""):
-			Content = checked
-		if "hristian" in Content.replace(" ", ""):
-			Content = checked
-		if "ewish" in Content.replace(" ", ""):
-			Content = checked
-		if "Jew" in Content.replace(" ", ""):
-			Content = checked
-		if "jew" in Content.replace(" ", ""):
-			Content = checked
-		if "Jesus do" in Content.replace(" ", ""):
-			Content = checked
-		if "Jesus said" in Content.replace(" ", ""):
-			Content = checked
-		if "ace theory" in Content.replace(" ", ""):
-			Content = checked
-		if "ace Theory" in Content.replace(" ", ""):
-			Content = checked
-		if "ar on Drugs" in Content.replace(" ", ""):
-			Content = checked
-		if "ar on drugs" in Content.replace(" ", ""):
-			Content = checked
-		if "leepy Joe" in Content.replace(" ", ""):
-			Content = checked
-		if "leepy joe" in Content.replace(" ", ""):
-			Content = checked
-		if "aetz" in Content.replace(" ", ""):
-			Content = checked
-		if "allot" in Content.replace(" ", ""):
-			Content = checked
-		if "stablish" in Content.replace(" ", ""):
-			Content = checked
-		if "he news" in Content.replace(" ", ""):
-			Content = checked
-		if "ox news" in Content.replace(" ", ""):
-			Content = checked
-		if "ox News" in Content.replace(" ", ""):
-			Content = checked
-		if "ransphob" in Content.replace(" ", ""):
-			Content = checked
-		if " rights" in Content.replace(" ", ""):
-			Content = checked
-		if "Rights" in Content.replace(" ", ""):
-			Content = checked
-		if "egulat" in Content.replace(" ", ""):
-			Content = checked
-		if "ender" in Content.replace(" ", ""):
-			Content = checked
-		if "olocaust" in Content.replace(" ", ""):
-			Content = checked
-		if "eminis" in Content.replace(" ", ""):
-			Content = checked
-		if "elfare" in Content.replace(" ", ""):
-			Content = checked
-		if "hapiro" in Content.replace(" ", ""):
-			Content = checked
-		if "ucker Carlson" in Content.replace(" ", ""):
-			Content = checked
-		if "ucker carlson" in Content.replace(" ", ""):
-			Content = checked
-		if "itch Mcconnel" in Content.replace(" ", ""):
-			Content = checked
-		if "itler" in Content.replace(" ", ""):
-			Content = checked
-		if "anon" in Content.replace(" ", ""):
-			Content = checked
-		if "eagan" in Content.replace(" ", ""):
-			Content = checked
-		if " war" in Content.replace(" ", ""):
-			Content = checked
-		if "War " in Content.replace(" ", ""):
-			Content = checked
-		if "ussia" in Content.replace(" ", ""):
-			Content = checked
-		if "nvade" in Content.replace(" ", ""):
-			Content = checked
-		if "roops" in Content.replace(" ", ""):
-			Content = checked
-		if "WW3" in Content.replace(" ", ""):
-			Content = checked
-		if "ar 3" in Content.replace(" ", ""):
-			Content = checked
-		if "ar III" in Content.replace(" ", ""):
-			Content = checked
-		if "WWIII" in Content.replace(" ", ""):
-			Content = checked
-		if "JB" in Content.replace(" ", ""):
-			Content = checked
-		if "jb" in Content.replace(" ", ""):
-			Content = checked
-		if "left" in Content.replace(" ", ""):
-			Content = checked
-		if "Left" in Content.replace(" ", ""):
-			Content = checked		
-		if Content == checked:
-			Content.delete()												
-		else:
-			Content = Content
-		if serializer.is_valid():
-			if serializer.validated_data['IsRepost'] != True and serializer.validated_data['IsLike'] == False and serializer.validated_data['IsComment'] == False:
-				serializer.validated_data['Author'] = prepared_data_variable
-				serializer.validated_data['Author_Profile'] = request.user.profile
-				serializer.validated_data['Content'] = Content
-				serializer.validated_data['Image'] = serializer.validated_data['ImageString']
-				serializer.save()
-			elif serializer.validated_data['IsRepost'] != False and serializer.validated_data['IsLike'] == False and serializer.validated_data['IsComment'] == False:
-				post_id = request.data.get('id')
-				pp.pprint('Reposted')
-				#repost(post_id, user)
-				return Response()
-			elif serializer.validated_data['IsLike'] != False and serializer.validated_data['IsComment'] == False:
-				post_id = request.data.get('id')
-				pp.pprint(user.id)
-				like(post_id, user)
-				return Response()
-			elif serializer.validated_data['IsComment'] != False and serializer.validated_data['IsLike'] != True:
-				post_id = request.data.get('id')
-				pp.pprint('comment')
-				pp.pprint(post_id)
-				#createComment(request, post_id, data)
-				return Response()					    
-		return Response(serializer.data)
-   
-	def put(self, request):
-		username = request.user.username
-		pp = pprint.PrettyPrinter(indent=4)
-		form = PostForm(request.POST or None, request.FILES or None)
-		serializer = PostSerializer(data=request.data)
-		post_id = request.data.get('id')
-		like(request, post_id, username)
-		pp.pprint('putt')
-		#serializer.data.LikeCount = 15
-		#post.Likes.add(request.user)
-		#post.LikeCount += 1
-		if serializer.is_valid():
-			post_id = request.data.get('id')
-			like(request, post_id, username)
-			pp.pprint('putt')
-			return Response()
-		return Response(serializer.data)	
+        if "enate" in Content.replace(" ", ""):
+            Content = checked
+        if "olitic" in Content.replace(" ", ""):
+            Content = checked	
+        if "limate" in Content.replace(" ", ""):
+            Content = checked
+        if "rump" in Content.replace(" ", ""):
+            Content = checked
+        if "police" in Content.replace(" ", ""):
+            Content = checked
+        if "elect" in Content.replace(" ", ""):
+            Content = checked
+        if "epublican" in Content.replace(" ", ""):
+            Content = checked
+        if "emocrat" in Content.replace(" ", ""):
+            Content = checked
+        if "Biden" in Content.replace(" ", ""):
+            Content = checked
+        if "acist" in Content.replace(" ", ""):
+            Content = checked
+        if "acism" in Content.replace(" ", ""):
+            Content = checked
+        if "ropaganda" in Content.replace(" ", ""):
+            Content = checked
+        if "emocracy" in Content.replace(" ", ""):
+            Content = checked
+        if "racial" in Content.replace(" ", ""):
+            Content = checked
+        if "acial" in Content.replace(" ", ""):
+            Content = checked    
+        if "rivelage" in Content.replace(" ", ""):
+            Content = checked
+        if "hite" in Content.replace(" ", ""):
+            Content = checked
+        if "lave" in Content.replace(" ", ""):
+            Content = checked
+        if "BLM" in Content.replace(" ", ""):
+            Content = checked
+        if "blm" in Content.replace(" ", ""):
+            Content = checked
+        if "lack lives matter" in Content.replace(" ", ""):
+            Content = checked
+        if "president" in Content.replace(" ", ""):
+            Content = checked
+        if "vote" in Content.replace(" ", ""):
+            Content = checked
+        if "GOP" in Content.replace(" ", ""):
+            Content = checked
+        if "upreme court" in Content.replace(" ", ""):
+            Content = checked
+        if "KKK" in Content.replace(" ", ""):
+            Content = checked
+        if "ongress" in Content.replace(" ", ""):
+            Content = checked
+        if "apitol" in Content.replace(" ", ""):
+            Content = checked
+        if "law" in Content.replace(" ", ""):
+            Content = checked
+        if "tax" in Content.replace(" ", ""):
+            Content = checked
+        if "DNC" in Content.replace(" ", ""):
+            Content = checked
+        if "RNC" in Content.replace(" ", ""):
+            Content = checked
+        if "andidate" in Content.replace(" ", ""):
+            Content = checked
+        if "CNN" in Content.replace(" ", ""):
+            Content = checked
+        if "olice" in Content.replace(" ", ""):
+            Content = checked
+        if "fficer" in Content.replace(" ", ""):
+            Content = checked
+        if "enator" in Content.replace(" ", ""):
+            Content = checked
+        if "overn" in Content.replace(" ", ""):
+            Content = checked
+        if "onstitution" in Content.replace(" ", ""):
+            Content = checked
+        if "NRA" in Content.replace(" ", ""):
+            Content = checked
+        if "nra" in Content.replace(" ", ""):
+            Content = checked
+        if "kkk" in Content.replace(" ", ""):
+            Content = checked
+        if "ealthcare" in Content.replace(" ", ""):
+            Content = checked
+        if "mendmant" in Content.replace(" ", ""):
+            Content = checked
+        if "gun" in Content.replace(" ", ""):
+            Content = checked
+        if "ilibuster" in Content.replace(" ", ""):
+            Content = checked
+        if "hite house" in Content.replace(" ", ""):
+            Content = checked
+        if "hite House" in Content.replace(" ", ""):
+            Content = checked
+        if "ederal" in Content.replace(" ", ""):
+            Content = checked
+        if "QAnon" in Content.replace(" ", ""):
+            Content = checked
+        if "ovid" in Content.replace(" ", ""):
+            Content = checked
+        if "accin" in Content.replace(" ", ""):
+            Content = checked
+        if "ommunis" in Content.replace(" ", ""):
+            Content = checked
+        if "Asian" in Content.replace(" ", ""):
+            Content = checked
+        if "union" in Content.replace(" ", ""):
+            Content = checked
+        if "tudent debt" in Content.replace(" ", ""):
+            Content = checked
+        if "tudent Debt" in Content.replace(" ", ""):
+            Content = checked
+        if "rotest" in Content.replace(" ", ""):
+            Content = checked
+        if "orporation" in Content.replace(" ", ""):
+            Content = checked
+        if "ight wing" in Content.replace(" ", ""):
+            Content = checked
+        if "eft wing" in Content.replace(" ", ""):
+            Content = checked
+        if "ight-wing" in Content.replace(" ", ""):
+            Content = checked
+        if "eft-wing" in Content.replace(" ", ""):
+            Content = checked 
+        if "mmigrant" in Content.replace(" ", ""):
+            Content = checked
+        if "edicare" in Content.replace(" ", ""):
+            Content = checked
+        if "edicaid" in Content.replace(" ", ""):
+            Content = checked
+        if "ecretary" in Content.replace(" ", ""):
+            Content = checked
+        if "ilitary" in Content.replace(" ", ""):
+            Content = checked
+        if "Obama" in Content.replace(" ", ""):
+            Content = checked
+        if "obama" in Content.replace(" ", ""):
+            Content = checked
+        if "un control" in Content.replace(" ", ""):
+            Content = checked
+        if "azi" in Content.replace(" ", ""):
+            Content = checked
+        if "iot" in Content.replace(" ", ""):
+            Content = checked
+        if "USDA" in Content.replace(" ", ""):
+            Content = checked
+        if "usda" in Content.replace(" ", ""):
+            Content = checked
+        if "FDA" in Content.replace(" ", ""):
+            Content = checked
+        if "fda" in Content.replace(" ", ""):
+            Content = checked
+        if "ascis" in Content.replace(" ", ""):
+            Content = checked
+        if "harma" in Content.replace(" ", ""):
+            Content = checked
+        if "FBI" in Content.replace(" ", ""):
+            Content = checked
+        if "Tax" in Content.replace(" ", ""):
+            Content = checked
+        if "uthoritarian" in Content.replace(" ", ""):
+            Content = checked
+        if "olitician" in Content.replace(" ", ""):
+            Content = checked
+        if "onservative" in Content.replace(" ", ""):
+            Content = checked
+        if "uslim" in Content.replace(" ", ""):
+            Content = checked
+        if "lection" in Content.replace(" ", ""):
+            Content = checked
+        if "hristian" in Content.replace(" ", ""):
+            Content = checked
+        if "arxis" in Content.replace(" ", ""):
+            Content = checked
+        if "narch" in Content.replace(" ", ""):
+            Content = checked
+        if "OVID" in Content.replace(" ", ""):
+            Content = checked
+        if "oronavirus" in Content.replace(" ", ""):
+            Content = checked
+        if "elhi" in Content.replace(" ", ""):
+            Content = checked
+        if "media" in Content.replace(" ", ""):
+            Content = checked
+        if "Media" in Content.replace(" ", ""):
+            Content = checked
+        if "United States" in Content.replace(" ", ""):
+            Content = checked
+        if "hreat" in Content.replace(" ", ""):
+            Content = checked
+        if "AOC" in Content.replace(" ", ""):
+            Content = checked
+        if "aoc" in Content.replace(" ", ""):
+            Content = checked
+        if "God " in Content.replace(" ", ""):
+            Content = checked
+        if "ibertarian" in Content.replace(" ", ""):
+            Content = checked
+        if "iberal" in Content.replace(" ", ""):
+            Content = checked
+        if "1A" in Content.replace(" ", ""):
+            Content = checked
+        if "2A" in Content.replace(" ", ""):
+            Content = checked
+        if "saki" in Content.replace(" ", ""):
+            Content = checked
+        if "order" in Content.replace(" ", ""):
+            Content = checked
+        if "un control" in Content.replace(" ", ""):
+            Content = checked
+        if "eftist" in Content.replace(" ", ""):
+            Content = checked
+        if "mpeach" in Content.replace(" ", ""):
+            Content = checked
+        if "ountry" in Content.replace(" ", ""):
+            Content = checked
+        if "ountries" in Content.replace(" ", ""):
+            Content = checked
+        if "partisan" in Content.replace(" ", ""):
+            Content = checked
+        if "Partisan" in Content.replace(" ", ""):
+            Content = checked
+        if "lobal" in Content.replace(" ", ""):
+            Content = checked
+        if "auci" in Content.replace(" ", ""):
+            Content = checked
+        if "Cox" in Content.replace(" ", ""):
+            Content = checked
+        if "reen party" in Content.replace(" ", ""):
+            Content = checked
+        if "reen Party" in Content.replace(" ", ""):
+            Content = checked
+        if "ncap" in Content.replace(" ", ""):
+            Content = checked
+        if "rexit" in Content.replace(" ", ""):
+            Content = checked
+        if "onfederate" in Content.replace(" ", ""):
+            Content = checked
+        if "flag" in Content.replace(" ", ""):
+            Content = checked
+        if "IRS" in Content.replace(" ", ""):
+            Content = checked
+        if "ardon" in Content.replace(" ", ""):
+            Content = checked
+        if "Build Back Better" in Content.replace(" ", ""):
+            Content = checked
+        if "uild back better" in Content.replace(" ", ""):
+            Content = checked
+        if "nigge" in Content.replace(" ", ""):
+            Content = checked
+        if "Nigge" in Content.replace(" ", ""):
+            Content = checked    
+        if "range man" in Content.replace(" ", ""):
+            Content = checked
+        if "range Man" in Content.replace(" ", ""):
+            Content = checked
+        if "hristian" in Content.replace(" ", ""):
+            Content = checked
+        if "ewish" in Content.replace(" ", ""):
+            Content = checked
+        if "Jew" in Content.replace(" ", ""):
+            Content = checked
+        if "jew" in Content.replace(" ", ""):
+            Content = checked
+        if "Jesus do" in Content.replace(" ", ""):
+            Content = checked
+        if "Jesus said" in Content.replace(" ", ""):
+            Content = checked
+        if "ace theory" in Content.replace(" ", ""):
+            Content = checked
+        if "ace Theory" in Content.replace(" ", ""):
+            Content = checked
+        if "ar on Drugs" in Content.replace(" ", ""):
+            Content = checked
+        if "ar on drugs" in Content.replace(" ", ""):
+            Content = checked
+        if "leepy Joe" in Content.replace(" ", ""):
+            Content = checked
+        if "leepy joe" in Content.replace(" ", ""):
+            Content = checked
+        if "aetz" in Content.replace(" ", ""):
+            Content = checked
+        if "allot" in Content.replace(" ", ""):
+            Content = checked
+        if "stablish" in Content.replace(" ", ""):
+            Content = checked
+        if "he news" in Content.replace(" ", ""):
+            Content = checked
+        if "ox news" in Content.replace(" ", ""):
+            Content = checked
+        if "ox News" in Content.replace(" ", ""):
+            Content = checked
+        if "ransphob" in Content.replace(" ", ""):
+            Content = checked
+        if " rights" in Content.replace(" ", ""):
+            Content = checked
+        if "Rights" in Content.replace(" ", ""):
+            Content = checked
+        if "egulat" in Content.replace(" ", ""):
+            Content = checked
+        if "ender" in Content.replace(" ", ""):
+            Content = checked
+        if "olocaust" in Content.replace(" ", ""):
+            Content = checked
+        if "eminis" in Content.replace(" ", ""):
+            Content = checked
+        if "elfare" in Content.replace(" ", ""):
+            Content = checked
+        if "hapiro" in Content.replace(" ", ""):
+            Content = checked
+        if "ucker Carlson" in Content.replace(" ", ""):
+            Content = checked
+        if "ucker carlson" in Content.replace(" ", ""):
+            Content = checked
+        if "itch Mcconnel" in Content.replace(" ", ""):
+            Content = checked
+        if "itler" in Content.replace(" ", ""):
+            Content = checked
+        if "anon" in Content.replace(" ", ""):
+            Content = checked
+        if "eagan" in Content.replace(" ", ""):
+            Content = checked
+        if " war" in Content.replace(" ", ""):
+            Content = checked
+        if "War " in Content.replace(" ", ""):
+            Content = checked
+        if "ussia" in Content.replace(" ", ""):
+            Content = checked
+        if "nvade" in Content.replace(" ", ""):
+            Content = checked
+        if "roops" in Content.replace(" ", ""):
+            Content = checked
+        if "WW3" in Content.replace(" ", ""):
+            Content = checked
+        if "ar 3" in Content.replace(" ", ""):
+            Content = checked
+        if "ar III" in Content.replace(" ", ""):
+            Content = checked
+        if "WWIII" in Content.replace(" ", ""):
+            Content = checked
+        if "JB" in Content.replace(" ", ""):
+            Content = checked
+        if "jb" in Content.replace(" ", ""):
+            Content = checked
+        if "left" in Content.replace(" ", ""):
+            Content = checked
+        if "Left" in Content.replace(" ", ""):
+            Content = checked		
+        if Content == checked:
+            Content.delete()												
+        else:
+            Content = Content
+        if serializer.is_valid():
+            if serializer.validated_data['IsRepost'] != True and serializer.validated_data['IsLike'] == False and serializer.validated_data['IsComment'] == False:
+                serializer.validated_data['Author'] = prepared_data_variable
+                serializer.validated_data['Author_Profile'] = request.user.profile
+                serializer.validated_data['Content'] = Content
+                serializer.validated_data['Image'] = serializer.validated_data['ImageString']
+                serializer.save()				    
+        return Response(serializer.data)   
+    
 
 class MessageViewSet(APIView):
     queryset = Message.objects.all()
@@ -1541,7 +1592,56 @@ class MessageViewSet(APIView):
         if serializer.is_valid():
             serializer.validated_data['sender'] = prepared_data_variable
             serializer.save()
-        return Response(serializer.data)	
+        return Response(serializer.data)
+
+class MessageThreadViewSet(APIView):
+	queryset = Message.objects.all()
+	serializer = MessageSerializer(queryset, many=True)
+	permission_classes = [permissions.AllowAny]
+	def get(self, request):
+		#queryset = Profile.objects.all()
+		User = get_user_model()
+		#user = User.objects.get(username=username)
+		messages = Message.objects.filter(Q(receiver__username=request.user.username) | Q(sender__username=request.user.username)).order_by('created_at')
+		permission_classes = [permissions.AllowAny]
+		#messages = Message.objects.filter(Q(receiver__username=request.user.username)).order_by('created_at').reverse()
+		serializer = MessageSerializer(messages, many=True)
+		prepared_data_variable = request.user
+		return Response(serializer.data)
+
+	def post(self, request):
+		permission_classes = [permissions.AllowAny]
+		prepared_data_variable = request.user
+		form = MessageForm(request.POST or None)
+		serializer = MessageSerializer(data=request.data)
+		data = request.data
+		#User = get_user_model()
+		
+		receiverName = data.get('receiver')
+		receiverUser = User.objects.get(username=request.user.username)
+
+		#self.get(self, request, )
+		messages = Message.objects.filter(Q(receiver__username=request.user.username) | Q(sender__username=request.user.username))
+		#receiver = serializer.receiver
+		data = request.data
+		#User = get_user_model()
+		return Response(serializer.data)
+
+class NewMessageViewSet(APIView):
+    queryset = Message.objects.all()#permission_classes = (permissions.AllowAny,)
+    serializer = MessageSerializer(queryset, many=True)
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        Receiver = self.request.GET.get('receiver', None).replace("_", " ")
+        Content = self.request.GET.get('msg_content', None).replace("_", " ")
+        ImageString = self.request.GET.get('ImageString', None)
+        j = self.request.GET.get('job', None)
+        currentJob = get_object_or_404(Job, pk=j)
+        receiverUser = User.objects.get(username=Receiver)
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(Content)
+        Message.objects.create(job=currentJob, sender=request.user, receiver=receiverUser, msg_content=Content, ImageString=ImageString, Image=ImageString)
+        return Response()              
 
 class NotificationViewSet(APIView):
     queryset = Notification.objects.all()
@@ -1576,6 +1676,18 @@ class JobDetailViewSet(APIView):
         serializer = JobSerializer(jobs, many=True)
         return Response(serializer.data)
 
+class LocationViewSet(APIView):
+    queryset = Profile.objects.all()#permission_classes = (permissions.AllowAny,)
+    serializer = ProfileSerializer(queryset, many=True)
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        queryset = Profile.objects.all()
+        serializer = ProfileSerializer(queryset, many=True)
+        lat = self.request.GET.get('lat', None)
+        lon = self.request.GET.get('lon', None)
+        updateLocation(request, lat, lon)
+        return Response(serializer.data)        
+
 class AcceptJobViewSet(APIView):
     queryset = Job.objects.all()#permission_classes = (permissions.AllowAny,)
     serializer = PostSerializer(queryset, many=True)
@@ -1585,16 +1697,28 @@ class AcceptJobViewSet(APIView):
         jobs = Job.objects.filter(Q(id=job_id))
         serializer = JobSerializer(jobs, many=True)
         assignJob(request, job_id)
-        return Response(serializer.data)              
+        return Response(serializer.data)
+
+class CompleteJobViewSet(APIView):
+    queryset = Job.objects.all()#permission_classes = (permissions.AllowAny,)
+    serializer = PostSerializer(queryset, many=True)
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        job_id = self.request.GET.get('id', None)
+        completion_image = self.request.GET.get('CompletionImage', None)
+        jobs = Job.objects.filter(Q(id=job_id))
+        serializer = JobSerializer(jobs, many=True)
+        completeJob(request, job_id, completion_image)
+        return Response(serializer.data)                     
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')   
 class JobViewSet(APIView):
-    queryset = Job.objects.all().order_by('Created').reverse()
+    queryset = Job.objects.filter(Q(Complete = False) & Q(InProgress = False)).order_by('Created').reverse()
     serializer = JobSerializer(queryset, many=True)
     
     def get(request, self):
-        queryset = Job.objects.filter(InProgress=False).order_by('Created').reverse()
+        queryset = Job.objects.filter(Q(Complete = False) & Q(InProgress = False)).order_by('Created').reverse()
         serializer = JobSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -1614,16 +1738,30 @@ class AddJobViewSet(APIView):
     serializer = JobSerializer(queryset, many=True)
     
     def get(self, request):
-        Business_Name = self.request.GET.get('BusinessName', None)
+        Business_Name = self.request.GET.get('BusinessName', None).replace("_", " ")
         Job_Type = self.request.GET.get('JobType', None)
-        Load_Weight = self.request.GET.get('LoadWeight', None)
+        Load_Weight = int(self.request.GET.get('LoadWeight', None))
+        Length = self.request.GET.get('Length', None).replace(".0", "")
+        Width = self.request.GET.get('Width', None).replace(".0", "")
+        Height = self.request.GET.get('Height', None).replace(".0", "")
         ImageString = self.request.GET.get('ImageString', None)
         Pieces = self.request.GET.get('Pieces', None)
         Pickup_Address = self.request.GET.get('PickupAddress', None).replace("_", " ")
         Destination_Address = self.request.GET.get('DestinationAddress', None).replace("_", " ")
-        Description = self.request.GET.get('Description', None)
-        Tip = self.request.GET.get('Tip', None)
+        Time_Needed = self.request.GET.get('TimeNeeded', None).replace("_", " ")
+        Description = self.request.GET.get('Description', None).replace("_", " ")
+        Tip = float(self.request.GET.get('Tip', None))
+        PhoneNumber = self.request.GET.get('PhoneNumber', None)
 
+        #DN = Date_Needed[:10]
+        TN = Time_Needed[:19]
+
+        L = int(Length)
+        W = int(Width)
+        H = int(Height)
+        Wght = int(Load_Weight)
+
+        type = Topic.objects.get(Label=Job_Type)
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(Business_Name)
         pp.pprint(Job_Type)
@@ -1654,13 +1792,85 @@ class AddJobViewSet(APIView):
 
         coords_1 = (Latitude_Pickup, Longitude_Pickup)
         coords_2 = (Latitude_Destination, Longitude_Destination)
-        Distance = geopy.distance.geodesic(coords_1, coords_2).miles 
+        Distance = geopy.distance.geodesic(coords_1, coords_2).miles
 
-        Job.objects.create(Business_Name=Business_Name, Job_Type=Job_Type, Load_Weight=Load_Weight, ImageString=ImageString, Image=ImageString, Pieces=Pieces, Description=Description, Pickup_Address=Pickup_Address, Destination_Address=Destination_Address, Latitude_Pickup=Latitude_Pickup, Longitude_Pickup=Longitude_Pickup, Latitude_Destination=Latitude_Destination, Longitude_Destination=Longitude_Destination, Distance=Distance, Tip=Tip)
+        if (L <= 5) | (W <= 4) | (H <= 4) | (Wght <= 200):
+            Price = (3.01 * Distance) #+ (Tip)
+            Driver_Pay = (1.41 * Distance) #+ (Tip)
+        if (L >= 6) | (W >= 5 & H >= 4) | (Wght >= 200):
+            Price = (4.02 * Distance) #+ (Tip)
+            Driver_Pay = (1.88 * Distance) #+ (Tip)
+        #if (L >= 6) | (W >= 6) | (H >= 5) | (Wght >= 400):
+            #Price = 4.20 * Distance
+            #Driver_Pay = 1.97 * Distance
+
+
+        #Car
+        #if (L <= 3) | (W <= 3.4) | (H <= 2.2) | (Wght <= 250):
+            #Price = 3 * Distance
+            #Driver_Pay = 1.41 * Distance
+
+
+#Small SUV
+        #if (L >= 60”) | (W >= 3 & H >= 2.8)  | (Wght >= 400):
+            #Price = 4.02 * Distance
+            #Driver_Pay = 1.88 * Distance
+
+
+#Standard SUV
+        #if (L >= 62) or (W >= 48”and H >= 33) or (Wght >= 450):
+            #Price = 4.02 * Distance
+            #Driver_Pay = 1.88 * Distance
+
+
+
+#Pickup Truck Short Bed
+        #if (L >= 68) or (W >= 65) or (H >= 84) or (Wght >= 600):
+            #Price = 4.20 * Distance
+            #Driver_Pay = 1.97 * Distance
+
+#Pickup Truck Standard Short Bed
+        #if (L >= 77) or (W >= 65) or (H >= 84) or (Wght >= 600):
+            #Price = 4.20 * Distance
+            #Driver_Pay = 1.97 * Distance
+
+#Pickup Truck Standard Long Bed
+        #if (L >= 84) or (W >= 65) or (H >= 84) or (Wght >= 600):
+            #Price = 4.20 * Distance
+            #Driver_Pay = 1.97 * Distance
+
+#Pickup Truck Standard Long Bed
+        #if (L >= 96) or (W >= 65) or (H >= 84) or (Wght >= 600):
+            #Price = 4.20 * Distance
+            #Driver_Pay = 1.97 * Distance    
+
+        Profit = Price - Driver_Pay
+
+        fee = Price*0.029
+
+        final_price = Price // 10 ** (int(math.log(Price, 10)) - 2 + 1) + fee
+
+
+
+        #Price = 3.02 * Distance
+        #total = Price
+
+        Job.objects.create(Business_Name=Business_Name, Author=request.user, Job_Type=type, Load_Weight=Load_Weight, Length=Length, Width=Width, Height=Height, ImageString=ImageString, Image=ImageString, CompletionImage="nil", Pieces=Pieces, Description=Description, Pickup_Address=Pickup_Address, Destination_Address=Destination_Address, Time_Needed=TN, Latitude_Pickup=Latitude_Pickup, Longitude_Pickup=Longitude_Pickup, Latitude_Destination=Latitude_Destination, Longitude_Destination=Longitude_Destination, Distance=Distance, Tip=Tip, Phone_Number=PhoneNumber, Price=round(final_price,2), Driver_Pay=round(Driver_Pay + Tip, 2), Profit=round(Profit, 2))
         #Business_Name = Job.objects.filter(Q(Business_Name=Business_Name))
         #Job_Type = Job.objects.filter(Q(Job_Type=Job_Type))
         return Response()           
 
+permission_classes = [permissions.AllowAny]
+@method_decorator(csrf_exempt, name='get')
+class MyOrdersViewSet(APIView):
+    queryset = Job.objects.all().order_by('Created').reverse()
+    serializer = JobSerializer(queryset, many=True)
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request):
+        queryset = Job.objects.filter(Q(Author = request.user)).order_by('Time_Needed')
+        serializer = JobSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
@@ -1670,7 +1880,7 @@ class MyJobViewSet(APIView):
     permission_classes = [permissions.AllowAny]
     
     def get(self, request):
-        queryset = Job.objects.filter(Assigned_Lugger = request.user).order_by('Created').reverse()
+        queryset = Job.objects.filter(Q(Assigned_Lugger = request.user) | Q(Author = request.user)).order_by('Created').reverse()
         serializer = JobSerializer(queryset, many=True)
         return Response(serializer.data)
   
@@ -1716,6 +1926,23 @@ class ProfileBackend(object):
         else:
             return None 
 
+
+class VideoViewSet(APIView):
+	queryset = Vid.objects.all()
+	permission_classes = [permissions.AllowAny]
+	serializer = VideoSerializer(queryset, many=True)
+	@csrf_exempt
+	def post(self, request):
+		#post = Meme.objects.all()
+		#prepared_data_variable = request.user
+		serializer = VideoSerializer(data=request.data)
+		#messages = Message.objects.filter(Q(receiver__username=request.user.username) | Q(sender__username=request.user.username))
+		#receiver = serializer.receiver
+		if serializer.is_valid():
+			serializer.save()
+		return Response(serializer.data)
+
+
 permission_classes = [permissions.AllowAny]
 @method_decorator(csrf_exempt, name='post')
 class ImageViewSet(APIView):
@@ -1743,14 +1970,260 @@ class ImageViewSet(APIView):
         #receiver = serializer.receiver
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)                   	
+        return Response(serializer.data)  
 
-#Content = form.save(commit=False)
-        #Content.Author = request.user
-        #files = request.FILES.getlist('Image')
-        #fs = FileSystemStorage()
-        #Content.save()
-        #form = PostForm(request.POST or None, request.FILES or None, instance=Content)
+class CreateStripeAccountView(View):
+    def post(self, request, *args, **kwargs):
+        stripe.api_key = 'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBqaJvMqvwQ5F0H1Gt7zF2TnlYRWZNVEpKmcbcRNd00y0elqhRX'
+        req_json = json.loads(request.body)
+        customer = stripe.Customer.create(name='Cole', email='coleparsons22@gmail.com')
+        #stripe.Customer.create(
+        #description="My First Test Customer (created for API docs at https://www.stripe.com/docs/api)",
+        #)
+        #transfer = stripe.Transfer.create(
+        #amount=1000,
+        #currency="usd",
+        #destination='{{CONNECTED_ACCOUNT_ID}}',
+        #)
+
+        CONNECTED_ACCOUNT_ID = customer.id
+
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(customer.id)
+        
+        account = stripe.Account.create(
+        country="US",
+        type="custom",
+        capabilities={"card_payments": {"requested": True}, "transfers": {"requested": True}},
+        )
+
+
+        created_account=stripe.AccountLink.create(
+        account=account,
+        refresh_url="https://connect.stripe.com/setup/c/acct_1McCyDPFYkUxcAmf/hTI7slJeP10O",
+        return_url="https://dashboard.stripe.com/login",
+        type="account_onboarding",
+        )
+        user = request.user
+        user.profile.Stripe_Link = created_account.url
+        user.profile.Stripe_Customer_ID = customer.id
+        user.profile.Stripe_Account_ID = account.id
+        user.profile.save()
+
+        pp.pprint(created_account.url)
+        pp.pprint(account.id)
+        pp.pprint(created_account)
+        pp.pprint(account)
+        return JsonResponse({'url':created_account.url})
+
+
+class TransferBalanceToStripeView(View):
+    def post(self, request, *args, **kwargs):
+        api.send_sms(body='test', from_phone='+18288967682', to=['+18288967682'])
+        stripe.api_key = 'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBqaJvMqvwQ5F0H1Gt7zF2TnlYRWZNVEpKmcbcRNd00y0elqhRX'
+        req_json = json.loads(request.body)
+
+        balance=json.loads(request.body)['items'][0]['balance']
+        id=json.loads(request.body)['items'][0]['id']
+
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(id)
+
+        
+
+        m = stripe.Account.modify(
+        id,
+        business_type="individual",
+        individual={"first_name":"Cole", "last_name":"Parsons", "phone":"8288967682", "email":"coleparsons22@gmail.com", "id_number": "241836010", "dob[day]":"03", "dob[month]":"05", "dob[year]":"1996", "ssn_last_4":"6010", "address[line1]":"2088 Rock Springs Circle", "address[city]":"Denver", "address[state]":"NC", "address[postal_code]":"28037"},
+        business_profile={"mcc": 4215, "url": "https://www.linkedin.com/in/cole-parsons-774221178/"},
+        tos_acceptance={"date": 1609798905, "ip": "8.8.8.8"}
+        )
+
+        #'individual.address.city',
+                                            # 'individual.address.line1', "address":"2088 Rock Springs Circle, Denver NC 28037"
+                                            # 'individual.address.postal_code',
+                                            # 'individual.address.state',
+                                            # 'individual.dob.day',
+                                            # 'individual.dob.month',
+                                            # 'individual.dob.year',
+                                            # 'individual.email',
+                                            # 'individual.last_name',
+                                            # 'individual.phone',
+                                            # 'individual.ssn_last_4'],
+
+
+
+        modify = stripe.Account.modify(
+        id,
+        capabilities={
+        "transfers": {"requested": True}
+        }
+        )
+
+        cap = stripe.Account.retrieve_capability(id, "transfers")
+
+        pp.pprint(cap)
+
+        p = str(balance*100)
+
+        total = p.replace(".0", "")
+        t2=total[ 0 : 3 ]
+
+        transfer = stripe.Transfer.create(
+        amount=t2,
+        currency="usd",
+        destination=id,
+        )
+        
+        return JsonResponse({'url':m})                     	
+
+
+class CheckoutSessionView(View):
+    permission_classes = [HasAPIKey]
+    def post(self, request, *args, **kwargs):
+        permission_classes = [HasAPIKey]
+        stripe.api_key = 'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBqaJvMqvwQ5F0H1Gt7zF2TnlYRWZNVEpKmcbcRNd00y0elqhRX'
+        req_json = json.loads(request.body)
+        customer = stripe.Customer.create(name='Cole', email='coleparsons22@gmail.com')
+        #serializer = JobSerializer(data=request.data)
+        #if serializer.is_valid():
+            #product_id = request.data.get('id')
+        product_id=json.loads(request.body)['items'][0]['id']#req_json["items"]["id"]   
+        #product_id = self.request.GET.get('id')
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(product_id)
+        #product_id = self.kwargs["id"]#112#serializer.data.get('id')#self.kwargs["pk"]
+        #Business_Name = self.request.GET.get('BusinessName', None).replace("_", " ")
+        product = Job.objects.get(id=product_id)
+        added = product.Price + product.Tip
+        p = str(added*100)
+        pp.pprint(p)
+        total = p.replace(".0", "")
+        t2=total[ 0 : 3 ]
+        pp.pprint(total)
+        YOUR_DOMAIN = "http://192.168.1.2:8000"
+        checkout_session = stripe.checkout.Session.create(
+                success_url=YOUR_DOMAIN + '/success?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=YOUR_DOMAIN + '/cancelled/',
+                payment_method_types=['card'],
+                mode='payment',
+                line_items=[
+                    {
+                    'price_data': {
+                        'currency': 'usd',
+                        'unit_amount': t2,
+                        'product_data': {
+                            'name': customer.name,
+                            # 'images': ['https://i.imgur.com/EHyR2nP.png'],
+                        },
+                    },
+                    'quantity': 1,
+                },
+            ],
+            metadata={
+                "product_id": product.id
+            }
+
+            )
+        ephemeralKey = stripe.EphemeralKey.create(
+        customer=customer['id'],
+        stripe_version='2022-08-01',
+        )    
+        intent = stripe.PaymentIntent.create(
+                amount=total,    #product.price,
+                currency='usd',
+                customer=customer['id'],
+                automatic_payment_methods={
+                    'enabled': True,
+                },
+                metadata={
+                    "product_id": product.id
+                }
+            )
+        return JsonResponse({'paymentIntent':intent.client_secret,
+                 'ephemeralKey':ephemeralKey.secret,
+                 'customer':customer.id,
+                 'publishableKey':'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBqaJvMqvwQ5F0H1Gt7zF2TnlYRWZNVEpKmcbcRNd00y0elqhRX'}) #JsonResponse({'intentClientSecret': intent['client_secret']})
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+
+        customer_email = session["customer_details"]["email"]
+        product_id = session["metadata"]["product_id"]
+
+        product = Job.objects.get(id=product_id)
+
+        send_mail(
+            subject="Here is your product",
+            message=f"Thanks for your purchase. Here is the product you ordered. The URL is {product.url}",
+            recipient_list=[customer_email],
+            from_email="matt@test.com"
+        )
+
+        # TODO - decide whether you want to send the file or the URL
+    
+    elif event["type"] == "payment_intent.succeeded":
+        intent = event['data']['object']
+
+        stripe_customer_id = intent["customer"]
+        stripe_customer = stripe.Customer.retrieve(stripe_customer_id)
+
+        customer_email = stripe_customer['email']
+        product_id = intent["metadata"]["product_id"]
+
+        product = Job.objects.get(id=product_id)
+
+        send_mail(
+            subject="Here is your product",
+            message=f"Thanks for your purchase. Here is the product you ordered. The URL is {product.url}",
+            recipient_list=[customer_email],
+            from_email="matt@test.com"
+        )
+
+    return HttpResponse(status=200)
+
+@csrf_exempt
+class StripeIntentView(View):
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        try:
+            req_json = json.loads(request.body)
+            customer = stripe.Customer.create(email=req_json['email'])
+            product_id = self.kwargs["pk"]
+            product = Job.objects.get(id=product_id)
+            
+            intent = stripe.PaymentIntent.create(
+                amount=product.price,
+                currency='usd',
+                customer=customer['id'],
+                metadata={
+                    "product_id": product.id
+                }
+            )
+            return JsonResponse({
+                'clientSecret': intent['client_secret']
+            })
+        except Exception as e:
+            return JsonResponse({ 'error': str(e) })        
+
 
 
 

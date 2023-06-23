@@ -22,7 +22,7 @@
   <div class="dropdown-content">
     <a class ="menutab" href="{% url 'index' %}"><i class="material-icons" id="materials-right">home</i></a>
     <a class ="menutab" href="{% url 'inbox' request.user.username %}"><i class="material-icons" id="materials-right">email</i></a>
-    <a class ="menutab" href="{% url 'removeNotifications' request.user.username %}"><i class="material-icons" id="materials-right">notifications</i>
+    <a class ="menutab" href=""><i class="material-icons" id="materials-right">notifications</i>
     {{ request.user.profile.Notifications }}</a>
     {% if request.user.profile.Profile_Picture %}
     <img class="profile_pic_nav" src="{{ request.user.profile.Profile_Picture.url }}"/>
@@ -36,7 +36,7 @@
     id="search" class="searchbar" 
     role="search" 
     method="get" 
-    action="{% url 'search' %}">
+    action="">
     <input
     placeholder="Search Purefun"
     style="height:25px;cursor:auto;";

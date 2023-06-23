@@ -8,7 +8,7 @@ from .models import Job
 from .models import Topic
 from .models import Message
 from .models import Notification
-from .models import Topic, Images
+from .models import Topic, Images, Vid
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from django.core.files import File
@@ -16,6 +16,26 @@ import base64
 import requests
 import urllib
 
+
+
+class StripeSerializer(serializers.ModelSerializer):
+	
+	class Meta:
+		model = Vid
+		fields = (
+		'id',
+		'Video',
+		)
+
+
+class VideoSerializer(serializers.ModelSerializer):
+	
+	class Meta:
+		model = Vid
+		fields = (
+		'id',
+		'Video',
+		)
 
 class TemplateSerializer(serializers.ModelSerializer):
 	
@@ -29,31 +49,56 @@ class TemplateSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
 	Job_Type = serializers.SerializerMethodField()
+	Author = serializers.SerializerMethodField()
 	Assigned_Lugger = serializers.SerializerMethodField()
+	Image = serializers.SerializerMethodField()
+	CompletionImage = serializers.SerializerMethodField()
 	def get_Job_Type(self, Job):
 		if Job.Job_Type:
 			return Job.Job_Type.Label
-		return "General"
+		return default
+	def get_Author(self, Job):
+		if Job.Author:
+			return Job.Author.username
+		else:
+			return "None"
 	def get_Assigned_Lugger(self, Job):
 		if Job.Assigned_Lugger:
 			return Job.Assigned_Lugger.username
 		else:
-			return "None"		
+			return "None"
+	def get_Image(self, Job):
+		if Job.Image:
+			return Job.Image.url
+		return ""
+	def get_CompletionImage(self, Job):
+		if Job.CompletionImage:
+			return Job.CompletionImage.url
+		return ""
 
 		
 	class Meta:
 		model = Job
 		fields = (
 		'id',
+		'Author',
 		'Business_Name',
 		'Job_Type',
 		'Description',
 		'Load_Weight',
+		'Length',
+		'Width',
+		'Height',
 		'Pieces',
 		'ImageString',
+		'Image',
+		'CompletionImage',
 		'Pickup_Address',
 		'Destination_Address',
+		'Time_Needed',
 		'Tip',
+		'Phone_Number',
+		'Price',
 		'Latitude_Pickup',
 		'Longitude_Pickup',
 		'Latitude_Destination',
@@ -62,6 +107,7 @@ class JobSerializer(serializers.ModelSerializer):
 		'Created',
 		'InProgress',
 		'Complete',
+		'Driver_Pay',
 		'Assigned_Lugger',
 		)
 
@@ -69,10 +115,15 @@ class JobSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
 	user = serializers.SerializerMethodField()
+	username = serializers.SerializerMethodField()
 	def get_user(self, Profile):
 		if Profile.user.username:
 			return Profile.user.username
 		return default
+	def get_username(self, Profile):
+		if Profile.user.username:
+			return Profile.user.username
+		return default	
 	def get_Profile_Picture(self, Profile):
 		if Profile.Profile_Picture:
 			return Profile.Profile_Picture.url
@@ -84,13 +135,21 @@ class ProfileSerializer(serializers.ModelSerializer):
 		fields = (
 		'id',	
 		'user',
+		'username',
 		'first_name',
 		'last_name',
 		'location',
 		'birth_date',
 		'Account_Type',
+		'Balance',
 		'Profile_Picture',
 		'License_Picture',
+		'Notifications',
+		'Stripe_Link',
+		'Stripe_Customer_ID',
+		'Stripe_Account_ID',
+		'lat',
+		'lon',
 		)           
 
 
@@ -113,18 +172,18 @@ class PostSerializer(serializers.ModelSerializer):
 	def get_Image(self, Post):
 		if Post.Image:
 			return Post.Image.url
-		return default
+		return ""
 	def get_Image2(self, Post):
 		if Post.Image2:
-			return Post.Image2.url
+			return ""
 		return ""
 	def get_Image3(self, Post):
 		if Post.Image3:
-			return Post.Image3.url
+			return ""
 		return ""
 	def get_Image4(self, Post):
 		if Post.Image4:
-			return Post.Image4.url
+			return ""
 		return ""			
 	def get_RepostAuthor(self, Post):
 		if Post.RepostAuthor:
@@ -168,6 +227,8 @@ class PostSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
 	sender = serializers.SerializerMethodField()
 	receiver = serializers.SerializerMethodField()
+	Image = serializers.SerializerMethodField()
+	job = serializers.SerializerMethodField()
 	def get_sender(self, Message):
 		if Message.sender.username:
 			return Message.sender.username
@@ -175,6 +236,14 @@ class MessageSerializer(serializers.ModelSerializer):
 	def get_receiver(self, Message):
 		if Message.receiver.username:
 			return Message.receiver.username
+		return default
+	def get_Image(self, Job):
+		if Job.Image:
+			return Job.Image.url
+		return ""
+	def get_job(self, Message):
+		if Message.job:
+			return Message.job.id
 		return default	
 	
 		
@@ -182,9 +251,12 @@ class MessageSerializer(serializers.ModelSerializer):
 		model = Message
 		fields = (
 		'id',
+		'job',
 		'sender',
 		'receiver',
 		'msg_content',
+		'Image',
+		'ImageString',
 		'created_at',	
 		)
 
@@ -215,6 +287,10 @@ class NotificationSerializer(serializers.ModelSerializer):
 		'sender',
 		'receiver',
 		'msg',
+		'isPickedUpNotification',
+		'isInProgressNotification',
+		'isMessageNotification',
+		'isCompleteNotification',
 		'created_at',	
 		)
 
@@ -295,6 +371,7 @@ class RegisterSerializer(serializers.Serializer):
 
 	password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 	password2 = serializers.CharField(write_only=True, required=True)
+	username = email
 	#Account_Type = serializers.ModelField(write_only=True, required=True, queryset=Account_Type.objects.all())
 
 
@@ -311,12 +388,13 @@ class RegisterSerializer(serializers.Serializer):
 	def create(self, validated_data):
 		user = User.objects.create(
 			username=validated_data['username'],
-			email=validated_data['email'],
+			email=validated_data['username'],
 		)
 
 		
 		user.set_password(validated_data['password'])
 		user.save()
+		
 
 		return user
 

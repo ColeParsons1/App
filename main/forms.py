@@ -105,8 +105,35 @@ my_default_errors = {
     'invalid': 'Vibe Check'
 }
 
-Invalid = "politics, political"        
 class PostForm(forms.ModelForm):
+
+    Content = forms.CharField(label='Text', widget=forms.TextInput(attrs={'rows':4, 'cols':15}), error_messages=my_default_errors)
+    Image = forms.ImageField(widget = forms.FileInput())
+    Topic = forms.ModelChoiceField(queryset=Topic.objects.order_by('Label'))
+
+    class Meta:
+        model = Post
+        fields = ('Topic', 'Image', 'Content',)
+        
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.fields['Image'].required = False
+        self.fields['Content'].required = False 
+        self.fields['Topic'].required = False
+
+    def clean_Content(self):
+        Content = self.cleaned_data.get('Content')
+        
+        if Content:
+            if "politics" not in Content: 
+                Content = Content
+            else:
+                Content = "My vibe has been checked :("
+                
+        return Content 
+
+Invalid = "politics, political"        
+class JobForm(forms.ModelForm):
 
     Business_Name = forms.CharField(label='Business Name', widget=forms.TextInput(attrs={'rows':4, 'cols':15}), error_messages=my_default_errors)
     Pickup_Address = forms.CharField(label='Pickup_Address', widget=forms.TextInput(attrs={'rows':1, 'cols':15}), error_messages=my_default_errors)
@@ -125,7 +152,7 @@ class PostForm(forms.ModelForm):
         fields = ('Business_Name', 'Pickup_Address', 'Destination_Address', 'Job_Type', 'Load_Weight', 'Latitude_Pickup','Longitude_Pickup','Latitude_Destination','Longitude_Destination','Distance')
         
     def __init__(self, *args, **kwargs):
-        super(PostForm, self).__init__(*args, **kwargs)
+        super(JobForm, self).__init__(*args, **kwargs)
         self.fields['Latitude_Pickup'].required = False
         self.fields['Longitude_Pickup'].required = False
         self.fields['Latitude_Destination'].required = False
@@ -235,5 +262,17 @@ class report(forms.ModelForm):
     class Meta:
         model = User
         fields = ('message',)
+
+
+class ImageForm(forms.ModelForm):
+    Image = forms.ImageField(widget = forms.FileInput())
+
+    class Meta:
+        model = user_pics
+        fields = ('Image', )
+        
+    def __init__(self, *args, **kwargs):
+        super(ImageForm, self).__init__(*args, **kwargs)
+        self.fields['Image'].required = False          
 
         

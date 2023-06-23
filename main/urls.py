@@ -35,7 +35,6 @@ urlpatterns = [
     path('(<post_id>[0-9]+)/message/', views.message, name='message'),
     path('(<post_id>[0-9]+)/msg/', views.msg, name='msg'),
     path('(<username>[a-zA-Z0-9]+)/inbox/', views.inbox, name='inbox'),
-    path('notifications/', views.removeNotifications, name='removeNotifications'),
     path('(<post_id>[0-9]+)/post/', views.post_detail, name='post_detail'),
     path('(<Label>[a-zA-Z0-9]+)/topics/', views.topics, name='topics'),
     path('(<Repost_id>[0-9]+)/post/', views.repost_detail, name='repost_detail'),
