@@ -1853,7 +1853,8 @@ class AddJobViewSet(APIView):
         pp.pprint(Price)
         
 
-        final_price = Price // 10 ** (int(math.log(Price, 10)) - 2 + 1) + fee
+        final_price = Price // 1 ** (int(math.log(Price, 10)) - 2 + 1) + fee
+        #final_price = Price // 10 ** (int(math.log(Price, 10)) - 2 + 1) + fee
         pp.pprint(final_price)
 
 
