@@ -1801,6 +1801,9 @@ class AddJobViewSet(APIView):
         if (L >= 6) | (W >= 5 & H >= 4) | (Wght >= 200):
             Price = (4.02 * Distance) #+ (Tip)
             Driver_Pay = (1.88 * Distance) #+ (Tip)
+
+            pp.pprint("Distance - " + Distance)
+            pp.pprint("Price - " + Price)
         #if (L >= 6) | (W >= 6) | (H >= 5) | (Wght >= 400):
             #Price = 4.20 * Distance
             #Driver_Pay = 1.97 * Distance
