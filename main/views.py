@@ -1802,8 +1802,6 @@ class AddJobViewSet(APIView):
             Price = (4.02 * Distance) #+ (Tip)
             Driver_Pay = (1.88 * Distance) #+ (Tip)
 
-            pp.pprint("Distance - " + Distance)
-            pp.pprint("Price - " + Price)
         #if (L >= 6) | (W >= 6) | (H >= 5) | (Wght >= 400):
             #Price = 4.20 * Distance
             #Driver_Pay = 1.97 * Distance
@@ -1852,8 +1850,11 @@ class AddJobViewSet(APIView):
 
         fee = Price*0.029
 
-        final_price = Price // 10 ** (int(math.log(Price, 10)) - 2 + 1) + fee
+        pp.pprint(Price)
+        
 
+        final_price = Price // 10 ** (int(math.log(Price, 10)) - 2 + 1) + fee
+        pp.pprint(final_price)
 
 
         #Price = 3.02 * Distance
