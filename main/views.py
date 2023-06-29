@@ -1065,7 +1065,7 @@ class LoginViewSet(APIView):
         pp.pprint(user.pk)
         pp.pprint(username)
         pp.pprint(password)
-        token = account_activation_token.make_token(user)
+        token = '814ID5KoLNqmuObh2RbCXZ1VcG6laVmWrmaIS8EE9NYpBjd48JcXfZJeAG0P8eEs'#account_activation_token.make_token(user)
         pp.pprint(token)
         user.is_active = True
         request.user = user
@@ -1093,7 +1093,7 @@ class LoginViewSet(APIView):
         pp.pprint(user.pk)
         pp.pprint(username)
         pp.pprint(password)
-        token = account_activation_token.make_token(user)
+        token = '814ID5KoLNqmuObh2RbCXZ1VcG6laVmWrmaIS8EE9NYpBjd48JcXfZJeAG0P8eEs'#account_activation_token.make_token(user)
         pp.pprint(token)
         user.is_active = True
         request.user = user
@@ -1172,7 +1172,7 @@ class ProfileViewSet(APIView):
         Profiles = Profile.objects.filter(user=request.user)
         serializer = ProfileSerializer(Profiles, many=True)
         pp = pprint.PrettyPrinter(indent=4)
-        csrf_token = get_token(request)
+        csrf_token = '814ID5KoLNqmuObh2RbCXZ1VcG6laVmWrmaIS8EE9NYpBjd48JcXfZJeAG0P8eEs'#get_token(request)
         pp.pprint(csrf_token)
         return Response(serializer.data)
 
