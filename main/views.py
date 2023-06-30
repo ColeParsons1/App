@@ -1097,6 +1097,8 @@ class LoginViewSet(APIView):
         pp.pprint(token)
         user.is_active = True
         request.user = user
+        user.profile.Token = token
+        user.profile.save()
         pp.pprint(request.user)
         return Response({"status": status.HTTP_200_OK, "Token": token})
 
