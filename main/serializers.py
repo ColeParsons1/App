@@ -150,6 +150,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 		'Stripe_Account_ID',
 		'lat',
 		'lon',
+		'Token',
 		)           
 
 
