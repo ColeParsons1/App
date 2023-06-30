@@ -1174,8 +1174,8 @@ class ProfileViewSet(APIView):
         Profiles = Profile.objects.filter(user=request.user)
         serializer = ProfileSerializer(Profiles, many=True)
         pp = pprint.PrettyPrinter(indent=4)
-        #csrf_token = get_token(request)
-        #pp.pprint(csrf_token)
+        csrf_token = get_token(request)
+        pp.pprint(csrf_token)
         return Response(serializer.data)
 
 #@method_decorator(csrf_exempt, name='dispatch')
