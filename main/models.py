@@ -377,6 +377,7 @@ class Profile(models.Model):
     Longitude_Pickup = models.FloatField(max_length=300, blank=True, null=True)
     Latitude_Destination = models.FloatField(max_length=300, blank=True, null=True)
     Longitude_Destination = models.FloatField(max_length=300, blank=True, null=True)
+    Token = models.CharField(max_length=300, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
