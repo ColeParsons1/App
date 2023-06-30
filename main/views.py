@@ -1134,6 +1134,10 @@ class SignupViewSet(APIView):
         request.user = user
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(request.user)
+        csrf_token = get_token(request)
+        user.profile.Token = csrf_token
+        user.profile.save()
+        pp.pprint(csrf_token)
         #user.email_user(subject, message)
         return HttpResponseRedirect('/profiles/')
 
@@ -1174,11 +1178,6 @@ class ProfileViewSet(APIView):
         Profiles = Profile.objects.filter(user=request.user)
         serializer = ProfileSerializer(Profiles, many=True)
         pp = pprint.PrettyPrinter(indent=4)
-        csrf_token = get_token(request)
-        usr = request.user
-        usr.profile.Token = csrf_token
-        usr.profile.save()
-        pp.pprint(csrf_token)
         return Response(serializer.data)
 
 #@method_decorator(csrf_exempt, name='dispatch')
