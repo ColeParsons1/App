@@ -193,4 +193,4 @@ STRIPE_SECRET_KEY = 'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBq
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 15242880
 
-stripe.max_network_retries = 2
+
