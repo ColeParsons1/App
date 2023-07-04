@@ -2106,7 +2106,8 @@ class CheckoutSessionView(View):
         #Business_Name = self.request.GET.get('BusinessName', None).replace("_", " ")
         product = Job.objects.get(id=product_id)
         fee = (product.Price + product.Tip)*0.029
-        added = product.Price + product.Tip + fee
+        added = round((product.Price + product.Tip + fee), 2)
+        #round(final_price,2)
         p = str(added*100)
         pp.pprint(p)
         total = p.replace(".0", "")
