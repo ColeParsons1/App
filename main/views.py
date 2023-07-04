@@ -2105,7 +2105,8 @@ class CheckoutSessionView(View):
         #product_id = self.kwargs["id"]#112#serializer.data.get('id')#self.kwargs["pk"]
         #Business_Name = self.request.GET.get('BusinessName', None).replace("_", " ")
         product = Job.objects.get(id=product_id)
-        added = product.Price + product.Tip
+        fee = (product.Price + product.Tip)*0.029
+        added = product.Price + product.Tip + fee
         p = str(added*100)
         pp.pprint(p)
         total = p.replace(".0", "")
