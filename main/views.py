@@ -1859,7 +1859,7 @@ class AddJobViewSet(APIView):
 
         final_price = Price // 1 ** (int(math.log(Price, 10)) - 2 + 1) + fee
         #final_price = Price // 10 ** (int(math.log(Price, 10)) - 2 + 1) + fee
-        pp.pprint(final_price)
+        pp.pprint(final_price+fee)
 
 
         #Price = 3.02 * Distance
