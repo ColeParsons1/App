@@ -2112,6 +2112,7 @@ class CheckoutSessionView(View):
         pp.pprint(p)
         total = p.replace(".0", "")
         t2=total[ 0 : 3 ]
+        pp.pprint(t2)
         pp.pprint(total)
         YOUR_DOMAIN = "http://146.190.222.176:8000"
         checkout_session = stripe.checkout.Session.create(
