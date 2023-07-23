@@ -1851,15 +1851,21 @@ class AddJobViewSet(APIView):
             #Driver_Pay = 1.97 * Distance    
 
         Profit = Price - Driver_Pay
-
         fee = Price*0.029
-
         pp.pprint(Price)
         
 
+
+
+
         final_price = Price // 1 ** (int(math.log(Price, 10)) - 2 + 1) + fee
+        
+        
+        
+        
+        
         #final_price = Price // 10 ** (int(math.log(Price, 10)) - 2 + 1) + fee
-        pp.pprint(final_price+fee)
+        pp.pprint(final_price) #fee
 
 
         #Price = 3.02 * Distance
@@ -1980,7 +1986,10 @@ class ImageViewSet(APIView):
         #receiver = serializer.receiver
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)  
+        return Response(serializer.data)
+
+    
+      
 
 class CreateStripeAccountView(View):
     def post(self, request, *args, **kwargs):
@@ -2079,7 +2088,7 @@ class TransferBalanceToStripeView(View):
         total = p.replace(".0", "")
         t2=total[ 0 : 3 ]
 
-        transfer = stripe.Transfer.create(
+        stripe.Transfer.create(
         amount=t2,
         currency="usd",
         destination=id,
