@@ -2045,14 +2045,16 @@ class TransferBalanceToStripeView(View):
         balance=json.loads(request.body)['items'][0]['balance']
         id=json.loads(request.body)['items'][0]['id']
 
-        m = stripe.Transfer.create(
+        
+
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(id)
+
+        stripe.Transfer.create(
         amount=1000,
         currency="usd",
         destination=id,
         )
-
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(id)
 
         
 
@@ -2100,7 +2102,7 @@ class TransferBalanceToStripeView(View):
         destination=id,
         )
         
-        return JsonResponse({'url':m})                     	
+        return JsonResponse({'url':cap})                     	
 
 
 class CheckoutSessionView(View):
