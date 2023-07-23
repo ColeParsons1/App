@@ -2050,13 +2050,13 @@ class TransferBalanceToStripeView(View):
 
         
 
-        m = stripe.Account.modify(
-        id,
-        business_type="individual",
-        individual={"first_name":"Cole", "last_name":"Parsons", "phone":"8288967682", "email":"coleparsons22@gmail.com", "id_number": "241836010", "dob[day]":"03", "dob[month]":"05", "dob[year]":"1996", "ssn_last_4":"6010", "address[line1]":"2088 Rock Springs Circle", "address[city]":"Denver", "address[state]":"NC", "address[postal_code]":"28037"},
-        business_profile={"mcc": 4215, "url": "https://www.linkedin.com/in/cole-parsons-774221178/"},
-        tos_acceptance={"date": 1609798905, "ip": "8.8.8.8"}
-        )
+        #m = stripe.Account.modify(
+        #id,
+        #business_type="individual",
+        #individual={"first_name":"Cole", "last_name":"Parsons", "phone":"8288967682", "email":"coleparsons22@gmail.com", "id_number": "241836010", "dob[day]":"03", "dob[month]":"05", "dob[year]":"1996", "ssn_last_4":"6010", "address[line1]":"2088 Rock Springs Circle", "address[city]":"Denver", "address[state]":"NC", "address[postal_code]":"28037"},
+        #business_profile={"mcc": 4215, "url": "https://www.linkedin.com/in/cole-parsons-774221178/"},
+        #tos_acceptance={"date": 1609798905, "ip": "8.8.8.8"}
+        #)
 
         #'individual.address.city',
                                             # 'individual.address.line1', "address":"2088 Rock Springs Circle, Denver NC 28037"
@@ -2088,7 +2088,7 @@ class TransferBalanceToStripeView(View):
         total = p.replace(".0", "")
         t2=total[ 0 : 3 ]
 
-        stripe.Transfer.create(
+        m = stripe.Transfer.create(
         amount=t2,
         currency="usd",
         destination=id,
