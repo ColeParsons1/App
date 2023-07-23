@@ -2045,6 +2045,12 @@ class TransferBalanceToStripeView(View):
         balance=json.loads(request.body)['items'][0]['balance']
         id=json.loads(request.body)['items'][0]['id']
 
+        stripe.Transfer.create(
+        amount=t2,
+        currency="usd",
+        destination=id,
+        )
+
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(id)
 
@@ -2072,12 +2078,12 @@ class TransferBalanceToStripeView(View):
 
 
 
-        modify = stripe.Account.modify(
-        id,
-        capabilities={
-        "transfers": {"requested": True}
-        }
-        )
+        #modify = stripe.Account.modify(
+        #id,
+        #capabilities={
+        #"transfers": {"requested": True}
+        #}
+        #)
 
         cap = stripe.Account.retrieve_capability(id, "transfers")
 
