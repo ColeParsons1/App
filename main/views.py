@@ -2046,7 +2046,7 @@ class TransferBalanceToStripeView(View):
         id=json.loads(request.body)['items'][0]['id']
 
         stripe.Transfer.create(
-        amount=t2,
+        amount=1000,
         currency="usd",
         destination=id,
         )
