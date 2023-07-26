@@ -2119,7 +2119,7 @@ class CheckoutSessionView(View):
         product_id=json.loads(request.body)['items'][0]['id']#req_json["items"]["id"]   
         #product_id = self.request.GET.get('id')
         pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(product_id)
+        pp.pprint(customer)
         #product_id = self.kwargs["id"]#112#serializer.data.get('id')#self.kwargs["pk"]
         #Business_Name = self.request.GET.get('BusinessName', None).replace("_", " ")
         product = Job.objects.get(id=product_id)
