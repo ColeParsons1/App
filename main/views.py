@@ -2111,8 +2111,6 @@ class CheckoutSessionView(View):
         permission_classes = [HasAPIKey]
         stripe.api_key = 'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBqaJvMqvwQ5F0H1Gt7zF2TnlYRWZNVEpKmcbcRNd00y0elqhRX'
         req_json = json.loads(request.body)
-        request.user
-        user.profile.Stripe_Link = created_account.url
         customer = stripe.Customer.create(name=request.user.username, email=request.user.username)
         #customer = stripe.Customer.create(name='Cole', email='coleparsons22@gmail.com')
         #serializer = JobSerializer(data=request.data)
