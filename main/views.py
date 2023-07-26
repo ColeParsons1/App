@@ -1896,7 +1896,7 @@ class MyJobViewSet(APIView):
     permission_classes = [permissions.AllowAny]
     
     def get(self, request):
-        queryset = Job.objects.filter(Q(Assigned_Lugger = request.user) | Q(Author = request.user)).order_by('Created').reverse()
+        queryset = Job.objects.filter(Q(Assigned_Lugger = request.user) | Q(Author = request.user)d                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ).order_by('Created').reverse()
         serializer = JobSerializer(queryset, many=True)
         return Response(serializer.data)
   
@@ -2111,7 +2111,10 @@ class CheckoutSessionView(View):
         permission_classes = [HasAPIKey]
         stripe.api_key = 'sk_test_51M1yvHABMyiljblNlxgjC76jKwkn5GCWjdBruPz2VWfESIgdBqaJvMqvwQ5F0H1Gt7zF2TnlYRWZNVEpKmcbcRNd00y0elqhRX'
         req_json = json.loads(request.body)
-        customer = stripe.Customer.create(name='Cole', email='coleparsons22@gmail.com')
+        request.user
+        user.profile.Stripe_Link = created_account.url
+        customer = stripe.Customer.create(name=request.user.username, email=request.user.username)
+        #customer = stripe.Customer.create(name='Cole', email='coleparsons22@gmail.com')
         #serializer = JobSerializer(data=request.data)
         #if serializer.is_valid():
             #product_id = request.data.get('id')
