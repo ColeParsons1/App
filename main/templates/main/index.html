@@ -39,13 +39,7 @@
 <div class="feed">
 <aside id="addPost">
   <form method="post" style="border:none;margin-top:100px;padding-left:0;padding-right:5%;" enctype="multipart/form-data" novalidate>
-    {% if request.user.profile.Profile_Picture %}
-  
-    {% else %}
-    {% for default_profile_pic in default_pic %}
 
-    {% endfor %}
-    {% endif %}
       {% csrf_token %}
       <table style="border:none; outline:none;">
       <tr style="border:none; outline:none;">{{ form.as_p }}</tr>
@@ -475,7 +469,7 @@ div.container-fluid {
 
 
 #commentIcon{
-  positon:absolute
+  positon:absolute;
   opacity:0.95;
   color:#363636;
   -webkit-transition-duration: 300ms;
@@ -598,7 +592,7 @@ div.container-fluid {
   -moz-transition-duration: 700ms;
   -o-transition-duration: 700ms;
   transition-duration: 700ms;
-  opacity:0.3;!important;
+  opacity:0.3!important;
 }
 
 .fa-share{
