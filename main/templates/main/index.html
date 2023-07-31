@@ -40,12 +40,10 @@
 <aside id="addPost">
   <form method="post" style="border:none;margin-top:100px;padding-left:0;padding-right:5%;" enctype="multipart/form-data" novalidate>
     {% if request.user.profile.Profile_Picture %}
-    <img class="header_profile_pic" style="opacity:1!important;" 
-    src="{{ user.profile.Profile_Picture.url }}"/>
+  
     {% else %}
     {% for default_profile_pic in default_pic %}
-    <img class="header_profile_pic" style="opacity:1!important;" 
-    src="{{ default_profile_pic.image.url }}"/>
+
     {% endfor %}
     {% endif %}
       {% csrf_token %}
