@@ -65,8 +65,49 @@
 <aside id="hidden" class="hidden">
   
 
-
-
+</aside>  
+  
+  </aside>
+ <aside id="postBlock" class="postBlock">
+  {% for post in all_posts %}
+  {% if post.Author in following or post.Author.username == request.user.username %}
+  <aside id="posts" href="{% url 'post_detail' post_id=post.id  %}">
+  {% if post.Author.profile.Profile_Picture %}
+  {% else %}
+  {% for default_profile_pic in default_pic %}
+  {% endfor %}
+  {% endif %}
+  {% if post.IsRepost and not post.RepostAuthor == None %}
+  <aside id="repostHeader">
+  <i class="medium material-icons" style="transform: rotateY(180deg);
+  margin-left:0.7%;
+  opacity:0.5!important;color:#52d552!important;
+  font-size:17px;
+  margin-bottom:-1%;
+  -webkit-text-stroke:0.5px #363636;">reply</i>
+  <strong class="Reposted"> Reposted by @{{ post.RepostAuthor }}</strong> 
+  </aside> 
+  {% endif %}
+  <a class="postAuthor" href="{% url 'get_user_profile' post.Author.username %}">
+    @{{ post.Author.username }}
+    </a>
+  <i class="material-icons" style="margin-left:1%;color:#B0B0B0;font-size:12px;opacity:0.7;">
+    collections_bookmark
+    </i>
+    {% if post.Topic %}
+  <a class="topic" href="{% url 'get_user_profile' post.Author.username %}">{{ post.Topic }}{{ post.ReShareCount }}</a>
+  <button class="btn">
+  </button>
+    {% endif %}
+<aside id="contentClick" class="contentClick">
+   <a href="{% url 'post_detail' post_id=post.id  %}"></a> 
+  {% if post.Content %}
+  <p class="mainfeed" href="">{{ post.Content }}</p>
+  {% endif %}
+  {% if post.Image %}
+  <img class="post_pic" style="opacity:1!important;" src="{{post.Image.url}}"/>
+  {% endif %}
+</aside>  
   <strong class="created">{{ post.Created }}</strong>
   <ul class="ul_one">
          {% if request.user in post.Comment.all %}
@@ -202,8 +243,8 @@
   </ul>
   <hr style="opacity:1!important;">
   </aside>
-
-
+  {% endif %}
+  {% endfor %}
 </aside>  
 </div>
 </body>
