@@ -1,8 +1,8 @@
 body{
-    background-color:#6699CC;  
+    background-color:#f05a01;  
   }
   h1{
-      color:#2e79c0;
+      color:#f05a01;
   }
   h2{
       
@@ -34,7 +34,7 @@ body{
       border: none;
       margin-bottom: 30px;
       background: white;
-      color: #2a81ca;
+      color: #f05a01;
       opacity:1.0;
   }
   .module blockquote {
@@ -52,6 +52,6 @@ body{
       font-weight: 400;
       font-size: 13px;
       text-align: left;
-      background: #2e79c0;
-      color: #2e79c0;
+      background: #f05a01;
+      color: #f05a01;
   }
