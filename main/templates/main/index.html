@@ -68,27 +68,7 @@
 </aside>  
   
   </aside>
- <aside id="postBlock" class="postBlock">
-  {% for post in all_posts %}
-  {% if post.Author in following or post.Author.username == request.user.username %}
-  <aside id="posts" href="{% url 'post_detail' post_id=post.id  %}">
-  {% if post.Author.profile.Profile_Picture %}
-  <img class="profile_pic" src="{{ post.Author.profile.Profile_Picture.url }}"/>
-  {% else %}
-  {% for default_profile_pic in default_pic %}
-  <img class="profile_pic" src="{{ default_profile_pic.image.url }}"/>
-  {% endfor %}
-  {% endif %}
-  {% if post.IsRepost and not post.RepostAuthor == None %}
-  <aside id="repostHeader">
-  <i class="medium material-icons" style="transform: rotateY(180deg);
-  margin-left:0.7%;
-  opacity:0.5!important;color:#52d552!important;
-  font-size:17px;
-  margin-bottom:-1%;
-  -webkit-text-stroke:0.5px #363636;">reply</i>
-  <strong class="Reposted"> Reposted by @{{ post.RepostAuthor }}</strong> 
-  </aside> 
+ 
   {% endif %}
   <a class="postAuthor" href="{% url 'get_user_profile' post.Author.username %}">
     @{{ post.Author.username }}
