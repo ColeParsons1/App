@@ -38,21 +38,7 @@
   <br>
 <div class="feed">
 <aside id="addPost">
-  <form method="post" style="border:none;margin-top:100px;padding-left:0;padding-right:5%;" enctype="multipart/form-data" novalidate>
-
-      {% csrf_token %}
-      <table style="border:none; outline:none;">
-      <tr style="border:none; outline:none;">{{ form.as_p }}</tr>
-      </table>
-    <p><input type="submit" name="post" value="Send" 
-    style="-webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    border-radius: 6px;margin-left:1%;
-    opacity:1!important;
-    color:black;
-    text-decoration-color:black;
-    background-color:#2a81ca;"></p>
-    </form>   
+  
 <p class="postFeed"></p>
 <aside id="hidden" class="hidden">
   
