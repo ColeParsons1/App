@@ -40,6 +40,7 @@ urlpatterns = [
     path('acceptjob/', views.AcceptJobViewSet.as_view()),
     path('getLocation/', views.LocationViewSet.as_view()),
     path('completejob/', views.CompleteJobViewSet.as_view()),
+    path('updateLicense/', views.UpdateLicensePictureViewSet.as_view()),
     path('checkout/', views.CheckoutSessionView.as_view()),
     path('create/', views.CreateStripeAccountView.as_view()),
     path('deposit/', views.TransferBalanceToStripeView.as_view()),

@@ -924,13 +924,12 @@ def updateLocation(request, lat, lon):
 
 
 @csrf_exempt            
-@method_decorator(csrf_exempt, name='updateLocation')
-def updateLicensePicture(request, lat, lon):
+@method_decorator(csrf_exempt, name='updateLicensePicture')
+def updateLicensePicture(request, img):
     permission_classes = [permissions.AllowAny]
     #job = get_object_or_404(Job, pk=job_id)
     usr = request.user
-    usr.profile.lat = lat
-    usr.profile.lon = lon
+    usr.profile.License_Picture = img
     usr.profile.save()
 
 
@@ -1193,6 +1192,19 @@ class ProfileViewSet(APIView):
         serializer = ProfileSerializer(Profiles, many=True)
         pp = pprint.PrettyPrinter(indent=4)
         return Response(serializer.data)
+    
+class UpdateLicensePictureViewSet(APIView):
+    
+    queryset = Profile.objects.all()#permission_classes = (permissions.AllowAny,)
+    serializer = ProfileSerializer(queryset, many=True)
+    #permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        Profiles = Profile.objects.filter(user=request.user)
+        serializer = ProfileSerializer(Profiles, many=True)
+        Img = self.request.GET.get('License_Picture', None)
+        updateLicensePicture(Img)
+        pp = pprint.PrettyPrinter(indent=4)
+        return Response(serializer.data)    
 
 #@method_decorator(csrf_exempt, name='dispatch')
 class PostViewSet(APIView):
