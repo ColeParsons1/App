@@ -920,7 +920,21 @@ def updateLocation(request, lat, lon):
     usr.profile.save()
 
 
-    return render(request=request, template_name="main/login.html", context={"login_form":usr})    
+    return render(request=request, template_name="main/login.html", context={"login_form":usr})
+
+
+@csrf_exempt            
+@method_decorator(csrf_exempt, name='updateLocation')
+def updateLicensePicture(request, lat, lon):
+    permission_classes = [permissions.AllowAny]
+    #job = get_object_or_404(Job, pk=job_id)
+    usr = request.user
+    usr.profile.lat = lat
+    usr.profile.lon = lon
+    usr.profile.save()
+
+
+    return render(request=request, template_name="main/login.html", context={"login_form":usr})  
     
 
 @csrf_exempt            
