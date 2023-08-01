@@ -2159,7 +2159,7 @@ class CheckoutSessionView(View):
         pp.pprint(t2)
         pp.pprint(total)
         YOUR_DOMAIN = "http://146.190.222.176:8000"
-        checkout_session = stripe.checkout.Session.create(
+        stripe.checkout.Session.create(
                 success_url=YOUR_DOMAIN + '/success?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url=YOUR_DOMAIN + '/cancelled/',
                 payment_method_types=['card'],
