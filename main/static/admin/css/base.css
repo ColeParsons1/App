@@ -3,9 +3,9 @@
 */
 
 /* VARIABLE DEFINITIONS */
-html[data-theme="light"],
+html[data-theme="dark"],
 :root {
-    --primary: #79aec8;
+    --primary: #121212;
     --secondary: #417690;
     --accent: #FA6304;
     --primary-fg: #fff;
