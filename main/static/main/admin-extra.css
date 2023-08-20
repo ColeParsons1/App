@@ -1,8 +1,9 @@
 body{
     background-color:#f05a01;  
-  }
- a{
-text-decoration-color: #FA6304;
+}
+a{
+    text-decoration-color: #FA6304;
+    color: #FA6304;
 }
 html[data-theme="light"], :root {
     --primary: #264b5d;
@@ -27,6 +28,8 @@ html[data-theme="light"], :root {
     --selected-row: #00363a;
     --close-button-bg: #333333;
     --close-button-hover-bg: #666666;
+    text-decoration-color: #FA6304;
+    color: #FA6304;
 }
 html[data-theme="dark"], :root {
     --primary: #264b5d;
@@ -51,6 +54,8 @@ html[data-theme="dark"], :root {
     --selected-row: #00363a;
     --close-button-bg: #333333;
     --close-button-hover-bg: #666666;
+    text-decoration-color: #FA6304;
+    color: #FA6304;
 }
   #site-name{
       color:white; 
