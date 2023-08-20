@@ -47,7 +47,7 @@ class ModelAdmin(admin.ModelAdmin):
   class Media:
            
         css = {
-             'all': ('main/static/main/admin-extra.css',) 
+             'all': ('main/static/main/admin-extra.css',)
         }
     
 
