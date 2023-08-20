@@ -1,13 +1,9 @@
 body{
     background-color:#f05a01;  
   }
-  h1{
-      color:#f05a01;
-  }
-  h2{
-      
-  }
-  
+ a{
+text-decoration-color: #FA6304;
+}
 html[data-theme="light"], :root {
     --primary: #264b5d;
     --primary-fg: #f7f7f7;
