@@ -90,7 +90,7 @@ html[data-theme="dark"],
 html[data-theme="light"],
 :root {
     --primary: #121212;
-    --secondary: #FA6304;
+    --secondary: gray;
     --accent: #FA6304;
     --primary-fg: #fff;
 
