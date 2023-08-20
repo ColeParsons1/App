@@ -1,60 +1,8 @@
-@media (prefers-color-scheme: dark) {
-    :root {
-		--primary: #121212;
-		--secondary: #FA6304;
-		--accent: #FA6304;
-		--primary-fg: #fff;
-	
-		--body-fg: #333;
-		--body-bg: #fff;
-		--body-quiet-color: #666;
-		--body-loud-color: #000;
-	
-		--header-color: #ffc;
-		--header-branding-color: var(--accent);
-		--header-bg: var(--secondary);
-		--header-link-color: var(--primary-fg);
-	
-		--breadcrumbs-fg: #c4dce8;
-		--breadcrumbs-link-fg: var(--body-bg);
-		--breadcrumbs-bg: var(--primary);
-	
-		--link-fg: #FA6304;
-		--link-hover-color: #036;
-		--link-selected-fg: #5b80b2;
-	
-		--hairline-color: #e8e8e8;
-		--border-color: #ccc;
-	
-		--error-fg: #ba2121;
-	
-		--message-success-bg: #dfd;
-		--message-warning-bg: #ffc;
-		--message-error-bg: #ffefef;
-	
-		--darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
-		--selected-bg: #e4e4e4; /* E.g. selected table cells */
-		--selected-row: #ffc;
-	
-		--button-fg: #fff;
-		--button-bg: var(--primary);
-		--button-hover-bg: #609ab6;
-		--default-button-bg: var(--secondary);
-		--default-button-hover-bg: #205067;
-		--close-button-bg: #747474;
-		--close-button-hover-bg: #333;
-		--delete-button-bg: #ba2121;
-		--delete-button-hover-bg: #a41515;
-	
-		--object-tools-fg: var(--button-fg);
-		--object-tools-bg: var(--close-button-bg);
-		--object-tools-hover-bg: var(--close-button-hover-bg);
-    }
-  }
+
 
 
 html[data-theme="dark"] {
-    --primary: #264b5d;
+    --primary: #121212;
     --primary-fg: #f7f7f7;
 
     --body-fg: #eeeeee;
@@ -65,7 +13,7 @@ html[data-theme="dark"] {
     --breadcrumbs-link-fg: #e0e0e0;
     --breadcrumbs-bg: var(--primary);
 
-    --link-fg: #81d4fa;
+    --link-fg: #FA6304;
     --link-hover-color: #4ac1f7;
     --link-selected-fg: #6f94c6;
 
