@@ -1759,7 +1759,25 @@ class JobViewSet(APIView):
         
         if serializer.is_valid(): 
             serializer.save()
-        return Response(serializer.data) 
+        return Response(serializer.data)
+    
+
+class DriverSignupStepOneViewSet(APIView):
+    queryset = Profile.objects.all().order_by('Created').reverse()
+    serializer = JobSerializer(queryset, many=True)
+    
+    def get(self, request):
+        usr = request.user
+
+        Full_Name = self.request.GET.get('FullName', None).replace("_", " ")
+        Email = self.request.GET.get('EmailAddress', None)
+        Street_Address = self.request.GET.get('StreetAddress', None).replace("_", " ")
+        PhoneNumber = self.request.GET.get('PhoneNumber', None)
+
+        usr.Profiles.first_name = Full_Name
+        usr.Profiles.save()
+
+        return Response()    
 
 
 permission_classes = [permissions.AllowAny]
