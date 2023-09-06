@@ -1763,7 +1763,7 @@ class JobViewSet(APIView):
     
 
 class DriverSignupStepOneViewSet(APIView):
-    queryset = Profile.objects.all().order_by('Created').reverse()
+    queryset = Profile.objects.all()
     serializer = JobSerializer(queryset, many=True)
     
     def get(self, request):
