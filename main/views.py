@@ -1774,8 +1774,8 @@ class DriverSignupStepOneViewSet(APIView):
         Street_Address = self.request.GET.get('StreetAddress', None).replace("_", " ")
         PhoneNumber = self.request.GET.get('PhoneNumber', None)
 
-        usr.Profiles.first_name = Full_Name
-        usr.Profiles.save()
+        usr.profile.first_name = Full_Name
+        usr.profile.save()
 
         return Response()    
 
