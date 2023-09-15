@@ -1749,8 +1749,7 @@ class JobViewSet(APIView):
     serializer = JobSerializer(queryset, many=True)
     
     def get(request, self):
-        queryset = Job.objects.filter(Q(Complete = F
-                                        alse) & Q(InProgress = False)).order_by('Created').reverse()
+        queryset = Job.objects.filter(Q(Complete = False) & Q(InProgress = False)).order_by('Created').reverse()
         serializer = JobSerializer(queryset, many=True)
         return Response(serializer.data)
 
