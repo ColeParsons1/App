@@ -1786,10 +1786,9 @@ class ChangeAccountTypeViewSet(APIView):
     def get(self, request):
         usr = request.user
         Account_Type = self.request.GET.get('Account_Type', None)
-        usr.profile.Account_Type.Label = Account_Type
+        usr.profile.Account_Type = Account_Type
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(Account_Type)
-        usr.profile.Account_Type.save()
         usr.profile.save()
 
         return Response()     
