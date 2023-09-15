@@ -1789,6 +1789,7 @@ class ChangeAccountTypeViewSet(APIView):
         usr.profile.Account_Type.Label = Account_Type
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(Account_Type)
+        usr.profile.Account_Type.save()
         usr.profile.save()
 
         return Response()     
