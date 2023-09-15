@@ -1781,12 +1781,14 @@ class DriverSignupStepOneViewSet(APIView):
 
 class ChangeAccountTypeViewSet(APIView):
     queryset = Profile.objects.all()
-    serializer = JobSerializer(queryset, many=True)
+    serializer = ProfileSerializer(queryset, many=True)
     
     def get(self, request):
         usr = request.user
-        Account_Type = self.request.GET.get('Account_Type', None).replace("_", " ")
+        Account_Type = self.request.GET.get('Account_Type', None)
         usr.profile.Account_Type = Account_Type
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(Account_Type)
         usr.profile.save()
 
         return Response()     
