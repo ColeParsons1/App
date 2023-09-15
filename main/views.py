@@ -1749,7 +1749,8 @@ class JobViewSet(APIView):
     serializer = JobSerializer(queryset, many=True)
     
     def get(request, self):
-        queryset = Job.objects.filter(Q(Complete = False) & Q(InProgress = False)).order_by('Created').reverse()
+        queryset = Job.objects.filter(Q(Complete = F
+                                        alse) & Q(InProgress = False)).order_by('Created').reverse()
         serializer = JobSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -1777,7 +1778,20 @@ class DriverSignupStepOneViewSet(APIView):
         usr.profile.first_name = Full_Name
         usr.profile.save()
 
-        return Response()    
+        return Response() 
+
+class ChangeAccountTypeViewSet(APIView):
+    queryset = Profile.objects.all()
+    serializer = JobSerializer(queryset, many=True)
+    
+    def get(self, request):
+        usr = request.user
+        Account_Type = self.request.GET.get('Account_Type', None).replace("_", " ")
+        usr.profile.Account_Type = Account_Type
+        usr.profile.save()
+
+        return Response()     
+
 
 
 permission_classes = [permissions.AllowAny]

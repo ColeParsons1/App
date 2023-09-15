@@ -38,6 +38,7 @@ urlpatterns = [
     path('jobs/', views.JobViewSet.as_view()),
     path('add/', views.AddJobViewSet.as_view()),
 	path('DriverSignupStepOne/', views.DriverSignupStepOneViewSet.as_view()),
+	path('ChangeAccountType/', views.ChangeAccountTypeViewSet.as_view()),
     path('acceptjob/', views.AcceptJobViewSet.as_view()),
     path('getLocation/', views.LocationViewSet.as_view()),
     path('completejob/', views.CompleteJobViewSet.as_view()),
