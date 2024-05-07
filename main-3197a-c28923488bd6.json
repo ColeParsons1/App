@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "main-3197a",
+  "private_key_id": "c28923488bd61cdb68dc846474661493e2715004",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCpLqfWLgYRjihE\nh4rrt0Ig+dOp/U5FCwYBJ/2Y2hirxBpQBpWDD8/ktSNHc9joTYUWevEXwIvJE9jR\nLF8SU5U7/dPmlmRbI0RdUDBh4oQxx/rhAogoTHg6aP3F9ZW6++jYhZ68He8pYga+\nWCFnQ8Oj5qIt1GQgpLYEEOrnB1oOjcUOZNQhzGYiFz+n7kQz7W2GOewXgmBo6U0E\nN6veKK4uIT0qmoQI7odngYBeyHgEbg/0i3FVwh6h3aLGhiPKsMPLRV662IK+OwWG\n6/H6pAjh9E5yB8I8dbRRwJNj6Nga4rMJxkvTpP82zsnIEDirLTAxX2GNLK3f7hKR\nMQQ+qEzZAgMBAAECggEALpl6wkxYAJLi9YlOEwIdtV6K1io+2lagd0YQHH+KRxmT\nU9KUcQ60aR8Zkg9PQiFEFL6VVMEE38RXNrpdj3s1Qlp2eO+Ywd+zb25sfTG6zsly\nCXM8lLkHbrNHnzS3YtMLPkSDxfYKz5/AEsLMpJhuNWGL70qur60es30DbtJAFHy2\nbvyOMZFsGd65ft7jnb7ub1dUpmQVPh/zP9VzilAj+76PXC4PsoVrANWjUcxh/qn2\nZhJKyknO5GEUe7IwaXNlAvar3P1pF729UHbFRcye485UO2BfICGl/eia6ufbDpbc\ncQgIyo4+6XRZi4BtmsiDwhxdmvxUWjeSaahBT2EDNwKBgQDamL1pZArYV61zPVva\nlJAnpGimAS7jLQYKZlbjByoFhcouEeQrabmRaG+x5NWXeuzgrH7a/wOwtMw5EbBz\nVkAJUo+EE9TzmSp/oxqCMD2zPF3j49JBw/bAfppO9rA+7xGc0klRZVRZ7mThwkrL\nHOTHOdAIklNUJW9n8LSBj71DrwKBgQDGIWallhL9VRAH1DZwDU6QZUyBXQSxrosq\nZcP57tTgH6ZPxo8iuwBTTQnKrwVLfpQJzlNMhbDZENPS7/hBaRrYSlrlPmnM8j1q\nCpbre2GRHIwVmPFqbN7DC9UHuqKDtUCTSxZrSYUsx1B/+yKmRbTihfLzBeW/X/Iw\nOMt9EMCx9wKBgQDKYSzDnRaZUxtHnOAkjvSjbwhf4KqLMszr5fG9QI28DTCw1Gmd\nc8WVBM6cMVM6allSbQEJOZ4uBEUq9OCa95hTyTcLvdyjJwP8pYHOVGFbRqFacjrg\nHlCdyNiOEL/9lBKHUP0GOb0NgbOue9YJFBgPBsw+k1JIjlwFLAnCBdThCwKBgADt\nmSB/cnlTU67ltJeTyGFuyAv3FpWKfsZlEaTzFHY0T8Ah6vu7qoW5X6leZoTzA9iD\n6en62lg59vQPAbe0uVZ4CrL2NuKp49XCVPCndE6Mtq9HNyJLfkOlo4rUufwp9jJ6\ncJFyF7ic+miPEZt7yhwhioDO70OVPHozWeitEmoDAoGACwn4FoDtAK1Wn7ZmRGIU\nYTBPeYg7L3SE8oisE0T9IJSkM5MKg8gq7vd29RtqMKr0U4MSiyh3exoq6ohZKA0K\niXgi/YI2pkUywh/vgeREu8YhZH6eAlFVU0fn2MjYL9rz4wFbasYZQo7kYmyb/Paw\nl+k39OUsQWnxvCqShrDYPpc=\n-----END PRIVATE KEY-----\n",
+  "client_email": "taylor-yourneighborscontractor@main-3197a.iam.gserviceaccount.com",
+  "client_id": "110579540260018246319",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/taylor-yourneighborscontractor%40main-3197a.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
