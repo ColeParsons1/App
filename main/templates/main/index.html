@@ -1,1267 +1,551 @@
-<!doctype html>
+{% load static %}
+
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
 <html lang="en">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@bold&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<head>
+  <!-- Theme Made By www.w3schools.com -->
+  <title>Your Neighbor's Contractor</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <!-- Custom fonts for this template-->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <!-- Font Awesome -->
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+  <!-- Moment.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+
+  <!-- Tempus Dominus Bootstrap 4 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>
+
+  <script>
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initAutocomplete&libraries=places&v=weekly"
+    defer
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="https://unpkg.com/headroom.js"></script>
   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-<head>
-  <title>Lug</title>
-  <meta name="description" content="">
-  <meta name="author" content="">
-</head>
-<body>
-  <nav class="navbar navbar-expand-sm bg-light navbar-light">
-    <div class="container-fluid">
-      <ul class="navbar-nav">
-       <li class="nav-item">
-          <a class="active" id="Platform" href="{% url 'index' %}">Services</a>
-        </li>
-        <li class="nav-item">
-          <a class="notActive" id="Businesses" href="#">Businesses</a>
-        </li>
-        <li class="nav-item">
-          <a class="notActive" id="Drivers" href="#">Drivers</a>
-        </li>
-        <li class="nav-item">
-          <a class="notActive" id="Reviews" href="#">Reviews</a>
-        </li>
-        <li class="nav-item">
-          <a class="notActive" id="Contact" href="#">Contact</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <br>
-  <br>
-<div class="feed">
-<aside id="addPost">
+
   
-<p class="postFeed"></p>
-<aside id="hidden" class="hidden">
+  <style>
+  .button-42 {
+  background-color: initial;
+  background-image: linear-gradient(-180deg, #FF7E31, #E62C03);
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  height: 40px;
+  line-height: 1.15;
+  outline: 0;
+  padding: 8px 16px;
+  pointer-events: auto;
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  width: 16%;
+  z-index: 9;
+  border: 0;
+  transition: box-shadow .2s;
+  margin-top: 5px;
+  margin-right: 5px;
+  float:right;
+  opacity: 1 !important;
+}
+
+.button-42:hover {
+  box-shadow: rgba(253, 76, 0, 0.5) 0 3px 8px;
+}  
+  body {
+    font: 400 15px Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;;
+    line-height: 1.8;
+    color: #818181;
+    background-image: linear-gradient(-180deg, #f8f9fc 10%, #c1c6d5 100%);
+  }
+  h1 {
+    font-weight: 400;
+    font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+    text-align: center;
+  }
+  h2 {
+    font-size: 24px;
+    text-transform: uppercase;
+    color: #303030;
+    font-weight: 600;
+    margin-bottom: 0px;
+  }
+  h4 {
+    font-size: 19px;
+    line-height: 1.375em;
+    color: #303030;
+    font-weight: 400;
+    margin-bottom: 0px;
+  }  
+  .jumbotron {
+    background-image: linear-gradient(-180deg, #f8f9fc 100%, #c1c6d5 10%);
+    color: black;
+    
+    padding: 1px 1px;
+    font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  .container-fluid {
+    padding: 100px 40px;
+    margin-top:220px;
+  }
+  .bg-grey {
+    background-color: #f6f6f6;
+  }
+  .logo-small {
+    color: #f4511e;
+    font-size: 50px;
+  }
+  .logo {
+    color: #f4511e;
+    font-size: 200px;
+  }
+  .thumbnail {
+    padding: 0 0 15px 0;
+    border: none;
+    border-radius: 0;
+  }
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 10px;
+  }
+  .carousel-control.right, .carousel-control.left {
+    background-image: none;
+    color: #f4511e;
+  }
+  .carousel-indicators li {
+    border-color: #f4511e;
+  }
+  .carousel-indicators li.active {
+    background-color: #f4511e;
+  }
+  .item h4 {
+    font-size: 19px;
+    line-height: 1.375em;
+    font-weight: 400;
+    font-style: italic;
+    margin: 70px 0;
+  }
+  .item span {
+    font-style: normal;
+  }
+  .panel {
+    border: 1px solid #f4511e; 
+    border-radius:0 !important;
+    transition: box-shadow 0.5s;
+  }
+  .panel:hover {
+    box-shadow: 5px 0px 40px rgba(0,0,0, .2);
+  }
+  .panel-footer .btn:hover {
+    border: 1px solid #f4511e;
+    background-color: #fff !important;
+    color: #f4511e;
+  }
+  .panel-heading {
+    color: #fff !important;
+    background-color: #f4511e !important;
+    padding: 25px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+  .panel-footer {
+    background-color: white !important;
+  }
+  .panel-footer h3 {
+    font-size: 32px;
+  }
+  .panel-footer h4 {
+    color: #aaa;
+    font-size: 14px;
+  }
+  .panel-footer .btn {
+    margin: 15px 0;
+    background-color: #f4511e;
+    color: #fff;
+  }
+  .navbar {
+    margin-bottom: 400px;
+    background-color: initial;
+    z-index: 9999;
+    border: 0;
+    font-size: 16px !important;
+    line-height: 1.42857143 !important;
+    letter-spacing: 2px;
+    border-radius: 0;
+    font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  .navbar li a, .navbar .navbar-brand {
+    color: black !important;
+  }
+  .navbar-nav li a:hover, .navbar-nav li.active a {
+    background-color: transparent;
+    color:transparent;
+  }
+  .navbar-default .navbar-toggle {
+    border-color: transparent;
+    color: #fff !important;
+  }
+  .fa {
+  padding: 10px;
+  font-size: 30px;
+  width: 60px;
+  text-align: center;
+  text-decoration: none;
+  margin: 5px 2px;
+}
+
+.fa:hover {
+    opacity: 0.7;
+}
+
+.fa-facebook {
+  background: #3B5998;
+  color: white;
+}
+
+.fa-twitter {
+  background: #55ACEE;
+  color: white;
+}
+
+.fa-google {
+  background: #dd4b39;
+  color: white;
+}
+
+.fa-linkedin {
+  background: #007bb5;
+  color: white;
+}
+
+.fa-instagram {
+  background: #125688;
+  color: white;
+}
+  footer .glyphicon {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #f4511e;
+  }
+  .slideanim {visibility:hidden;}
+  .slide {
+    animation-name: slide;
+    -webkit-animation-name: slide;
+    animation-duration: 1s;
+    -webkit-animation-duration: 1s;
+    visibility: visible;
+  }
+@keyframes slide {
+  0% {
+      opacity: 0;
+      transform: translateY(70%);
+  } 
+  100% {
+      opacity: 1;
+      transform: translateY(0%);
+    }
+  }
+  @-webkit-keyframes slide {
+    0% {
+      opacity: 0;
+      -webkit-transform: translateY(70%);
+    } 
+    100% {
+      opacity: 1;
+      -webkit-transform: translateY(0%);
+    }
+  }
+  @media screen and (max-width: 768px) {
+    .col-sm-4 {
+      text-align: center;
+      margin: 25px 0;
+    }
+    .btn-lg {
+      width: 100%;
+      margin-bottom: 35px;
+    }
+  }
+  @media screen and (max-width: 480px) {
+    .logo {
+      font-size: 150px;
+    }
+  }
+  </style>
+</head>
+<body id="myPage" class="bg-gradient-light" data-spy="scroll" data-target=".navbar" data-offset="60">
+
+  <img src="/YNC2.png" id="logo1" style="margin-left: 0px;
+  margin-right: auto;float: left;padding: none !important;z-index: 100000;margin-top:-220px; top:0;"width="25%" height="25%"/>
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar">
+
+
+  
   
 
-</aside>  
+
+
   
-  </aside>
- <aside id="postBlock" class="postBlock">
-  {% for post in all_posts %}
-  {% if post.Author in following or post.Author.username == request.user.username %}
-  <aside id="posts" href="{% url 'post_detail' post_id=post.id  %}">
-  {% if post.Author.profile.Profile_Picture %}
-  {% else %}
-  {% for default_profile_pic in default_pic %}
-  {% endfor %}
-  {% endif %}
-  {% if post.IsRepost and not post.RepostAuthor == None %}
-  <aside id="repostHeader">
-  <i class="medium material-icons" style="transform: rotateY(180deg);
-  margin-left:0.7%;
-  opacity:0.5!important;color:#52d552!important;
-  font-size:17px;
-  margin-bottom:-1%;
-  -webkit-text-stroke:0.5px #363636;">reply</i>
-  <strong class="Reposted"> Reposted by @{{ post.RepostAuthor }}</strong> 
-  </aside> 
-  {% endif %}
-  <a class="postAuthor" href="{% url 'get_user_profile' post.Author.username %}">
-    @{{ post.Author.username }}
-    </a>
-  <i class="material-icons" style="margin-left:1%;color:#B0B0B0;font-size:12px;opacity:0.7;">
-    collections_bookmark
-    </i>
-    {% if post.Topic %}
-  <a class="topic" href="{% url 'get_user_profile' post.Author.username %}">{{ post.Topic }}{{ post.ReShareCount }}</a>
-  <button class="btn">
-  </button>
-    {% endif %}
-<aside id="contentClick" class="contentClick">
-   <a href="{% url 'post_detail' post_id=post.id  %}"></a> 
-  {% if post.Content %}
-  <p class="mainfeed" href="">{{ post.Content }}</p>
-  {% endif %}
-  {% if post.Image %}
-  <img class="post_pic" style="opacity:1!important;" src="{{post.Image.url}}"/>
-  {% endif %}
-</aside>  
-  <strong class="created">{{ post.Created }}</strong>
-  <ul class="ul_one">
-         {% if request.user in post.Comment.all %}
-    <li class="list">
-      <a class="postMenu" href="{% url 'post_detail' post_id=post.id  %}">
-        <button class="commentbtn">
-          <i id="postcommentIcon" class='material-icons'>
-            comment
-            <small class="notcommentNumber" 
-            style="color:#b3b3b3!important;opacity:1!important;z-index:-1;overflow:hidden;">
-              {{ post.CommentCount }}
-              </small>
-          </i>
-          </button>
-          </a>
-          </li>
-          {% endif %}
-          {% if not request.user in post.Comment.all %}
-    <li class="list">
-      <a class="postMenu" href="{% url 'post_detail' post_id=post.id  %}">
-        <button class="commentbtn">
-          <i id="commentIcon" class='material-icons'>
-            comment
-            <small class="notcommentNumber" 
-            style="z-index:-1;overflow:hidden;">
-              {{ post.CommentCount }}
-              </small>
-          </i>
-          </button>
-          </a>
-          </li>
-          {% endif %}      
-    <li class="list">
-          {% if request.user in post.Reposts.all %}
-         <a class="postMenu" href="#">
-         <button class="btn" type="submit" name="share">  
-          <i class="material-icons" id="alreadysharedIcon" type="submit" name="share" value="false"
-          >reply
-          </i>
-          <small class="sharedNumber" 
-          style="text-shadow:none!important;z-index:-1;overflow:hidden;">
-            {{ post.ReshareCount }}
-            </small>
-          </button>
-          </a>
-          {% else %}
-          <a class="postMenu" href="">
-          <button class="btn" type="submit" name="share">  
-          <i class="material-icons" id="sharedIcon" value="false"
-          type="submit" name="share">reply
-          </i>
-          <small class="sharedNumber" style="text-shadow:none;
-          opacity:0.85!important;color:#b3b3b3 !important;">
-            {{ post.ReshareCount }}
-            </small>
-          {% endif %}
-          </button>
-          </a>
-          </li>
-    <li class="list">
-      {% if request.user in post.Likes.all %}
-      <a class="postMenu" href="{% url 'unlike' post_id=post.id  %}">
-        <button class="btn" type="submit" name="like">
-          <i class="material-icons" id ="likedstarIcon" type="submit" name="like" value="false">
-            star
-            <small class="likedNumber" 
-            style="z-index:-1;overflow:hidden;">
-              {{ post.LikeCount }}
-              </small>
-          </i>
-          </button>
-          </a>
-      {% endif %}
-          {% if not request.user in post.Likes.all %}
-      <a class="postMenu" href="{% url 'like' post_id=post.id username=post.Author %}">
-        <button class="btn" onclick="history.back();" type="submit" name="like">
-          <i class="material-icons" id="starIcon" type="submit" 
-          value="false" name="like">
-            star
-          <small class="notlikedNumber" 
-          style="font-weight:bold!important;z-index:-1;overflow:hidden;">
-            {{ post.LikeCount }}
-            </small>
-          </i>
-          </button>
-          </a>
-          {% endif %}
-          </li>
-    <li class="list">
-      <a class="postMenuClick" href="">
-        <button type="submit" onclick="<script>document.getElementById('DMPost').classList.remove('MFormHidden');</script>" name="DM" id="DMbtn" class="DMbtn">
-          <i class="material-icons" id="dmIcon">
-            share
-            </i>
-          </button>
-          </a>
-          </li>
   
-    <li class="flag">
-      {% if not request.user in post.Flags.all %}
-      <a class="" href="{% url 'flag' post_id=post.id %}">
-        <button class="btn">
-          <i class="material-icons" id="flagIcon" >
-            flag
-            </i>
-          </button>
-          </a>
-      {% else %}
-      <a class="" href="{% url 'flag' post_id=post.id %}">
-        <button class="btn">
-          <i class="material-icons" id="flaggedIcon" >
-            flag
-            </i>
-          </button>
-          </a>
-      {% endif %}
-<div id="dmDiv">
-    <form method="post" action="{% url 'msg' post_id=post.id %}" id="DMPost" class="DMFormHidden" name="DM" 
-    style="border:none;margin:0;padding-left:0;padding-right:5%;" 
-    enctype="multipart/form-data" novalidate>
-    {% csrf_token %}
-    <table style="border:none; outline:none;">
-    <tr style="border:none; outline:none;">
-      {{ dmForm.as_p }}
-      </tr>
-    </table>
+  
+
+    <a href="#contact" style="color: white;"><button type="button" class="button-42" id="button42">Schedule A Quote</button></a>
+
+    <ul class="nav navbar-nav navbar-right" style="vertical-align: top; top:0;margin-top:0px;margin-bottom:-30px;margin-right:20px;">
+      <li style="color: black!important;"><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li style="padding: 8px 20px;margin-top: 7px;"><p><span class="glyphicon glyphicon-earphone"></span><a> 855-610-3233</a></p></li>
+
+    </ul>
+  </div>
+  
+  
+  
+
+
+
+</nav>
+
+<!-- Container (About Section) -->
+<div id="about" class="container-fluid">
+  
+  <div class="row" style="padding-left:8%;">
+    <div class="col-sm-8">
+      <h2>About Us</h2><br>
+      <h4>Welcome to Your Neighbor's Contractor, where we bring a neighborly touch to every roofing project we undertake.
+        With over 5 years of dedicated experience in the roofing industry, our skilled team has been serving the Southeast US, 
+        ensuring both commercial and residential properties are not just protected but also enhanced by our work.</h4><br>
+        <p>
+        Our journey began with a simple yet powerful vision: to provide high-quality roofing repairs that residents 
+        and businesses can trust, just like they would trust a helpful neighbor. 
+        This ethos is at the heart of everything we do, from our meticulous attention to detail to our 
+        unwavering commitment to customer satisfaction.</p>
+        <p>
+        At Your Neighbor's Contractor, we understand that your property is more than just a building; 
+        it's a home for your family or a place that supports your business. 
+        That's why we treat every job with the utmost care and professionalism, using only the best materials
+        and the latest techniques to ensure your roof is in optimal condition. Whether you're facing the aftermath
+        of a storm, dealing with wear and tear, or simply looking for an upgrade, we're here to offer our expertise and support.</p>
+        <p>
+        Our team is not just experienced; we're passionate about what we do. We believe in building long-lasting
+        relationships with our clients, standing by our work with guarantees that give you peace of mind. 
+        That's why we proudly offer a 100% satisfaction guarantee on all our services. We're not happy unless you're happy,
+        and we're committed to working until your expectations are fully met.</p>
+        <p>
+        From the initial consultation to the final inspection, you'll find our approach friendly, 
+        transparent, and focused on your specific needs. 
+        So, why choose us? Because at Your Neighbor's Contractor, we're more than just a service 
+        provider—we're part of your community. We're dedicated to ensuring that every project we undertake 
+        enhances the safety, beauty, and value of your property. With our 100% satisfaction 
+        guarantee, let us take the worry out of roofing repairs so you can enjoy the comfort and security
+        of your home or business, rain or shine.</p>
+
+        <p>Welcome to Your Neighbor's Contractor. Let's build a stronger, safer community together.</p>
+        <br>
+
+
+
+        <p>Follow us on social media!</p>
+      
+
+      <a href="#" class="fa fa-linkedin"></a>
+      <a href="#" class="fa fa-instagram"></a>
+    </div>
+    <div class="col-sm-4">
+      
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Container (Services Section) -->
+<div id="services" class="container-fluid text-center bg-grey">
+  <h2>SERVICES</h2>
+  <h4>What we offer</h4>
+  <br>
+  <div class="row slideanim">
+    <div class="col-sm-4">
+      <span class="glyphicon glyphicon-home logo-small" style="background: -moz-linear-gradient(top, #FF7E31 0%, #E62C03 100%);
+      background: -webkit-linear-gradient(top, #FF7E31 0%, #E62C03 100%);
+      background: linear-gradient(to bottom, #FF7E31 0%, #E62C03 100%);
+      -webkit-background-clip: text;
+      -moz-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;"></span>
+      <h4 style="color:#303030;">ROOF INSTALLATION</h4>
+      <p></p>
+    </div>
+    <div class="col-sm-4">
+      <span class="glyphicon glyphicon-warning-sign logo-small" style="background: -moz-linear-gradient(top, #FF7E31 0%, #E62C03 100%);
+      background: -webkit-linear-gradient(top, #FF7E31 0%, #E62C03 100%);
+      background: linear-gradient(to bottom, #FF7E31 0%, #E62C03 100%);
+      -webkit-background-clip: text;
+      -moz-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;"></span>
+      <h4>ROOF REPLACEMENT</h4>
+      <p></p>
+    </div>
+    <div class="col-sm-4">
+      <span class="glyphicon glyphicon-wrench logo-small" style="background: -moz-linear-gradient(top, #FF7E31 0%, #E62C03 100%);
+      background: -webkit-linear-gradient(top, #FF7E31 0%, #E62C03 100%);
+      background: linear-gradient(to bottom, #FF7E31 0%, #E62C03 100%);
+      -webkit-background-clip: text;
+      -moz-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;"></span>
+      <h4>ROOF REPAIR</h4>
+      <p></p>
+    </div>
+  </div>
+</div>
+
+<!-- Container (Portfolio Section) -->
+<div id="portfolio" class="container-fluid text-center" style="padding-bottom:120px;">
+  <h2>Portfolio</h2><br>
+  <h4>Coming Soon!</h4>
+</div>
+
+<!-- Container (Pricing Section) -->
+
+
+<!-- Container (Contact Section) -->
+<div id="contact" class="container-fluid bg-grey">
+  <h2 class="text-center">SCHEDULE A QUOTE</h2>
+  <div class="row">
+
+                   
+  <form method="post" style="padding:8%;" action="{% url 'quote_schedule2' %}" class="address-form" name="DM" 
+  enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  <table id="form" style="border:none; outline:none;">
+  <tr style="border:none; outline:none;">
+    {{form | crispy}}
     
-  <p><input type="submit" name="dm" value="Send" style="background-color:transparent;color:#BAC2C6;" ></p>
-  </form>
+
+                        <p>{{ form.media }}</p>          
+    </tr>
+  </table>
+  
+  <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
+    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+      <div class="input-group-text"><i class="fa fa-calendar"></i>
+      
+      </div>
+    </div>
+  </div>
+  <br>
+<p><input type="submit" name="dm" value="Send" class="btn btn-success btn-block" ></p>
+</form>
+    </div>
+  </div>
 </div>
-          </li>
-          
-  </ul>
-  <hr style="opacity:1!important;">
-  </aside>
-  {% endif %}
-  {% endfor %}
-</aside>  
-</div>
+
+<!-- Image of location/map -->
+
+
+<footer class="container-fluid text-center">
+  <a href="#myPage" title="To Top">
+    <span class="glyphicon glyphicon-chevron-up"></span>
+  </a>
+  <p>&copy; Your Neighbor's Contractor, LLC</p>
+</footer>
+
+<script>
+$(document).ready(function(){
+  // Add smooth scrolling to all links in navbar + footer link
+  $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
+    // Make sure this.hash has a value before overriding default behavior
+    if (this.hash !== "") {
+      // Prevent default anchor click behavior
+      event.preventDefault();
+
+      // Store hash
+      var hash = this.hash;
+
+      // Using jQuery's animate() method to add smooth page scroll
+      // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
+      $('html, body').animate({
+        scrollTop: $(hash).offset().top
+      }, 900, function(){
+   
+        // Add hash (#) to URL when done scrolling (default click behavior)
+        window.location.hash = hash;
+      });
+    } // End if
+  });
+  
+  $(window).scroll(function() {
+    $(".slideanim").each(function(){
+      var pos = $(this).offset().top;
+
+      var winTop = $(window).scrollTop();
+        if (pos < winTop + 600) {
+          $(this).addClass("slide");
+        }
+    });
+  });
+})
+</script>
+<script>
+  var lastScrollTop; // This Varibale will store the top position
+ 
+ navbar = document.getElementById('navbar'); // Get The NavBar
+ logo = document.getElementById('logo1');
+ logo2 = document.getElementById('logo2');
+ h = document.getElementById('h');
+ b42 = document.getElementById('button42');
+
+ window.addEventListener('scroll',function(){
+  //on every scroll this funtion will be called
+   
+   var scrollTop = document.documentElement.scrollTop;
+   //This line will get the location on scroll
+   
+   if(scrollTop >= lastScrollTop){ //if it will be greater than the previous
+     navbar.style.opacity='1.0';
+     //logo.style.width ='8%';
+     //logo.style.height ='8%';
+     //logo.style.float ='center';
+     b42.style.opacity = '1.0';
+     //logo.style.opacity = '1.0';
+     //set the value to the negetive of height of navbar 
+   }
+
+   
+   
+   else{
+    navbar.style.opacity='1.0';
+     //logo.style.width ='20%';
+     //logo.style.height ='20%';
+     //logo.style.opacity = '1.0';
+
+   }
+   
+   lastScrollTop = scrollTop; //New Position Stored
+ });
+ </script>
+
+
 </body>
 </html>
-
-<!-- CSS Starts Here -->
-<style>
-/* Kyle's Screen */
-@media only screen  and (min-width : 1366px) and (min-height : 768px) and (max-width : 1366px) and (max-height : 768px) {
-
-}
-
-
-a.active{
-  font-size:16px;
-  border-bottom: 3px solid rgb(252,96,34, 0.89);
-  text-decoration-color: rgb(252,96,34, 0.89);
-  color:rgb(252,96,34, 0.89);
-  font-weight: 700;
-  padding:20px;
-  transition: all 0.2s ease!important;
-  opacity:0.89
-}
-a.notActive{
-  font-size:16px;
-  color: #505050;
-  font-weight: 700;
-  padding:20px;
-  transition: all 0.2s ease!important;
-}
-a.notActive:hover{
-
-}
-
-ul.navbar-nav{
-  
-}
-li.nav-item{
-  padding:0px;
-  margin:0;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-div.container-fluid {
-  margin-top:-25px;
-  text-align: center;
-}
-.group{
-  display:table-caption;
-  margin-left:3%;
-  background-color:transparent;
-  padding-left:8%;
-}
-#notificationNumber{
-  color:#B20000;
-}
-#msgNumber{
-  color:#B20000;
-}
-#dmDiv{
-
-}
-#formFields{
-  opacity:0.53;
-  margin-bottom:0;
-}
-#hidden{
- display:inline; 
-}
-.notHidden{
-  display:inline;
-}
-.hidden{
-  display:inline;
-}
-.custom-file{
-  margin-bottom:-2%;
-  padding:0;
-  font-family: 'Open Sans', sans-serif;
-}
-/* Search Bar CSS */
-.notifCount{
-  font-size:12px;
-}
-.msgCount{
-  font-size:12px;
-}
-.DMFormShow{
-  display:inline-flex;
-  width:10%;
-  margin-left:-12%;
-  margin-bottom:0;
-  padding:0;
-  opacity:0.2;
-  font-size:10px;
-}
-.DMFormHidden{
-  display:none;
-}
-.DM{
-  width:5%;
-  float:right;
-  margin-top:0;
-  padding:0;
-  display:flex;
-  position:relative;
-  z-index:10000;
-  display:none;
-}
-.searchbar{
-  margin-left:25.1%;
-  z-index:5000;
-  padding:0; 
-  margin-top:-6.8%!important;
-  width:8%;
-  position:fixed;
-}
-#DMPost{
-  margin-left:2%;
-}
-.form-control{
-  background-color: transparent;
-  color:black;
-  font-weight:bolder;
-  font-size: 12px;
-  font-family: 'Open Sans', sans-serif;
-  z-index:50;
-  width:200%;
-  outline: none;
-}
-
-::placeholder{
-  color:black;
-  user-select: none;
-  opacity:1!important;
-}
-
-
-#postBlock{
-  margin-left:0.25%;
-}
-
-#flagIcon{
-  margin-top:-2.2%;
-  position:absolute;
-  color:#363636;
-  opacity:0.3!important;
-  -webkit-transition-duration: 300ms;
-  -moz-transition-duration: 300ms;
-  -o-transition-duration: 300ms;
-  transition-duration: 300ms;
-  opacity:0.68!important;
-  font-size:17px;
-}
-#flaggedIcon{
-  margin-top:-2.2%;
-  margin-left:30%;
-  position:absolute;
-  color:#FF0000!important;
-  opacity:0.3!important;
-  -webkit-transition-duration: 300ms;
-  -moz-transition-duration: 300ms;
-  -o-transition-duration: 300ms;
-  transition-duration: 300ms;
-  opacity:0.68!important;
-  font-size:17px;
-}
-
-#dmIcon{
-  margin-top:-1.91%;
-  position:absolute;
-  color:#363636;
-  opacity:0.9;
-  overflow:hidden;
-  -webkit-transition-duration: 300ms;
-  -moz-transition-duration: 300ms;
-  -o-transition-duration: 300ms;
-  transition-duration: 300ms;
-  margin-right:24%;
-  margin-left:auto!important;
-  z-index:1000;
-  font-size:17px;
-}
-
-#sharedIcon{
-  margin-top:-0.85%;
-  position:relative;
-  transform: rotateY(180deg);
-  text-shadow:none;
-  opacity:0.3;
-  color:#b3b3b3;
-  -webkit-transition-duration: 300ms;
-  -moz-transition-duration: 300ms;
-  -o-transition-duration: 300ms;
-  transition-duration: 300ms;
-  z-index:1000;
-  font-size:18px;
-}
-#alreadysharedIcon{
-  margin-top:-0.85%;
-  position:relative;
-  transform: rotateY(180deg);
-  text-shadow:none;
-  opacity:0.90!important;
-  color:#52d552!important;
-  font-size:18px;
-}
-
-#starIcon{
-  margin-top:-2.2%;
-  position:absolute;
-  text-shadow:none;
-  opacity:1!important;
-  color:#363636;
-  position:relative;
- -webkit-transition-duration: 300ms;
-  -moz-transition-duration: 300ms;
-  -o-transition-duration: 300ms;
-  transition-duration: 300ms;
-  z-index:1000;
-  font-size:17px;
-}
-#likedstarIcon{
-  margin-top:-2.2%;
-  text-shadow:none;
-  opacity:0.92!important;
-  color:#ffae42!important;
-  font-size:17px;
-}
-
-
-#commentIcon{
-  positon:absolute;
-  opacity:0.95;
-  color:#363636;
-  -webkit-transition-duration: 300ms;
-  -moz-transition-duration: 300ms;
-  -o-transition-duration: 300ms;
-  transition-duration: 300ms;
-  z-index:1000;
-  font-size:17px;
-}
-#postcommentIcon{
-  opacity:1;
-  color:#389ad6;
-  font-size:17px;
-}
-#materials-right{
-  font-size:27px;
-}
-.created{
-  margin-left:7.2%!important;
-  color:#d1d1d1;
-  font-size:12px;
-  margin-top:0;
-  font-family: 'Open Sans', sans-serif;
-}
-.sharedNumber{
-  color:#b3b3b3!important;
-  opacity:0.8!important;
-  font-size:11px;
-  font-weight:bold;
-  text-shadow:none!important;
-  z-index:100;
-}
-.commentNumber{
-  opacity:1!important;
-  font-size:11px;
-  color:#389ad6!important;
-  font-weight:bold;
-  z-index:100;
-  text-shadow:none!important;
-}
-.likedNumber{
-  color:#b3b3b3!important;
-  opacity:0.9!important;
-  margin-right:0!important;
-  padding-right:0!important;
-  font-size:11px;
-  font-weight:bold;
-  z-index:1000;
-  text-shadow:none!important;
-}
-.notsharedNumber{
-  color:#b3b3b3!important;
-  opacity:0.9!important;
-  font-size:11px;
-  font-weight:bold;
-  text-shadow:none!important;
-  z-index:100;
-}
-.notcommentNumber{
-  color:#B3B3B3!important;
-  font-size:11px;
-  font-weight:bold;
-  opacity:1!important;
-  z-index:100;
-  text-shadow:none!important;
-}
-.notlikedNumber{
-  color:#b3b3b3!important;
-  opacity:0.9!important;
-  margin-right:0!important;
-  padding-right:0!important;
-  font-size:11px;
-  font-weight:bold;
-  z-index:1000;
-  text-shadow:none!important;
-}
-
-.fa-home{
-  font-size:25px;
-  padding:0;
-}
-.fa-bell{
-  font-size:25px;
-  padding:0;
-}
-.fa-envelope{
-  color:#B3B3B3!important;
-  opacity:0.44 !important;
-  margin-left:0!important;
-  -webkit-transition-duration: 700ms;
-  -moz-transition-duration: 700ms;
-  -o-transition-duration: 700ms;
-  transition-duration: 700ms;
-  text-shadow:none;
-}
-
-.fa-comment{
-  color:#B3B3B3!important;
-    -webkit-transition-duration: 700ms;
-  -moz-transition-duration: 700ms;
-  -o-transition-duration: 700ms;
-  transition-duration: 700ms;
-  opacity:0.44;
-}
-
-.gg-corner-up-right{
-  color:#363636!important;
-  text-shadow:none;
-    -webkit-transition-duration: 700ms;
-  -moz-transition-duration: 700ms;
-  -o-transition-duration: 700ms;
-  transition-duration: 700ms;
-}
-
-.fa-ellipsis-h{
-  color:#B3B3B3!important;
-  text-shadow:none;
-  align:right;
-    -webkit-transition-duration: 700ms;
-  -moz-transition-duration: 700ms;
-  -o-transition-duration: 700ms;
-  transition-duration: 700ms;
-  opacity:0.3!important;
-}
-
-.fa-share{
-  opacity:0.47!important;
-  color:#010101!important;
-  text-shadow:none;
-    -webkit-transition-duration: 900ms;
-  -moz-transition-duration: 900ms;
-  -o-transition-duration: 900ms;
-  transition-duration: 900ms;
-  -webkit-text-stroke:1.5px #B3B3B3;
-}
-
-.fa-star{
-  color:#B3B3B3!important;
-  text-shadow:none;
-    -webkit-transition-duration: 700ms;
-  -moz-transition-duration: 700ms;
-  -o-transition-duration: 700ms;
-  transition-duration: 700ms;
-  opacity:0.44;
-}
-#repostHeader{
-margin-top:-0.5%;
-margin-bottom:0%;
-}
-.Reposted{
-  margin-top:-1%;
-  margin-left:0%;
-  margin-bottom:-1%;
-  opacity:0.35;
-  color:#d1d1d1;
-}
-
-select{
-  background-color:transparent;
-  color:transparent!important;
-  border:none;
-  outline:none;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  cursor:pointer;
-  font-family: 'Open Sans', sans-serif;
-}
-
-option{
-  background-color:transparent;
-  color:white;
-  border:none;
-  outline:none;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  font-family: 'Open Sans', sans-serif;
-  cursor:pointer;
-}
-button{
-  -webkit-border-radius: 12px;
-  -moz-border-radius: 12px;
-  border-radius: 12px;
-  cursor:pointer;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  cursor:pointer;
-  font-family: 'Open Sans', sans-serif;
-  cursor:pointer;
-}
-.postFeed{
-  margin-top:20%;
-  margin-left:5.5%;
-  margin-bottom:0;
-}
-.mainfeed{
-  margin-right:57%;
-  opacity:1!important;
-}
-.btn{
-  background-color:transparent;
-  color:transparent;
-  border:none;
-  cursor:pointer;
-  padding:0;
-  margin:0;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  border:none;
-  outline:none;
-  z-index:1000;
-  font-family: 'Open Sans', sans-serif;
-}
-.DMbtn{
-  background-color:transparent;
-  color:transparent;
-  border:none;
-  cursor:pointer;
-  padding:0;
-  margin:0;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  border:none;
-  outline:none;
-  z-index:1000;
-}
-.list{
-  color:black;
-}
-.commentbtn{
-  background-color:transparent;
-  color:transparent;
-  border:none;
-  cursor:pointer;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  border:none;
-  outline:none;
-  user-select: none;
-}
-tr:focus{
-  opacity:1;
-  width:40%;
-  height:70%;
-  -webkit-transition: 0.5s;
-  transition: 0.5s;
-  transition: width 0.5s ease-in-out;
-  color:white;
-}
-td:focus{
-  opacity:1;
-  width:100%;
-  height:100%;
-  -webkit-transition: 0.5s;
-  transition: 0.5s;
-  transition: width 0.5s ease-in-out;
-  color:white;
-}
-tr{
-  background-color:transparent;
-  border:none;
-  outline:none;
-  margin:0;
-  font-size:13px;
-}
-td{
-  background-color:transparent;
-  border:none;
-  outline:none;
-  font-size:13px;
-}
-table{
-  background-color:transparent;
-  color:white;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  border:none;
-  outline:none;
-  font-size:13px;
-}
-.hidden{
-  display:none;
-}
-
-form{
-  opacity:0.75;
-  background-color:#060606;
-  color:#d1d1d1;
-  -webkit-border-radius: 7px;
-  -moz-border-radius: 7px;
-  border-radius: 7px;
-  outline: none;
-  margin-top:12%;
-  margin-bottom:5%;
-  margin-left:4%;
-  font-family: 'Open Sans', sans-serif;
-  cursor:pointer;
-  display:contents;
-  font-size:10px;
-}
-form:focus{
-  opacity:1;
-  width:100%;
-  height:100%;
-  -webkit-transition: 0.5s;
-  transition: 0.5s;
-  transition: width 0.5s ease-in-out;
-  outline: none;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  color:white;
-}
-#addPost{
-  margin-left:0%;
-  padding:0%;
-  margin-top:5%;
-}
-
-#posts{
-  margin:0%;
-  padding:2%;
-}
-strong{
-  color:#b3b3b3;
-  opacity:0.6;
-  font-weight:bold;
-  font-size:12px;
-  font-family: 'Open Sans', sans-serif;
-  margin-left:0;
-}
-small{
-  color:#363636;
-  opacity:1;
-  font-weight:bold;
-  font-family: 'Open Sans', sans-serif;
-  z-index:-10000!important;
-  margin:0;
-  padding:0;
-}
-input[type='file']{
-    background-color:transparent;
-    opacity:0.5;
-    cursor:pointer;
-}
-
-input[type=text]{
-  opacity:1!important;
-  background-color:white;
-  color:black;
-  width:auto;
-  height:auto;
-  display:inline;
-  -webkit-transition: 0.7s;
-  transition: 0.7s;
-  transition: width 0.7s ease-in-out;
-  border:none;
-  outline:none;
-  margin-left:-0.5%;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  cursor:auto;
-}
-input[type=text]:focus{
-  opacity:1!important;
- width:auto;
-  height:auto;
-  outline: none;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  color:black;
-}
-input{
- cursor:pointer;
- border:none;
- outline:none;
- color:black;
-}
-
-.ul_one{
-  position:relative;
-  width:100%;
-  white-space: nowrap;
-  margin-top:3%;
-  margin-left:-6%;
-  margin-bottom:1%;
-  display: inline-block;
-  user-select:none;
-}
-.ul_two{
-  margin-top:3%;
-  margin-left:-13.6%;
-  margin-bottom:2%;
-}
-.postAuthor{
-  font-weight:900;
-  font-size: 16px;
-  margin-bottom:0%;
-  text-decoration:none;
-  color:#BAC2C6;
-  margin-left:0.7%!important;
-  margin-top:-0.5;
-}
-
-.repostAuthor{
-  font-weight:900;
-  font-size: 16px;
-  margin-bottom:0%;
-  text-decoration:none;
-  color:#BAC2C6;
-  margin-left:-0.02%!important;
-}
-a.repostAuthor{
-  font-weight:900;
-  font-size: 16px;
-  margin-bottom:0%;
-  margin-top:3%;
-  padding-top:3%;
-  text-decoration:none;
-  margin-left:0;
-  color:#BAC2C6;
-}
-.postMenu{
-  text-decoration:none;
-  opacity:0.9;
-}
-a.menutab{
-  font-weight:bold;
-  color:white;
-  float:right;
-}
-ul{
-  margin-top:5%;
-  margin-left:-14%;
-}
-li {
-  display:inline;
-  margin-left:8%;
-}
-
-hr{
-  margin-left:-2.2%;
-  margin-bottom:-1.4%;
-  margin-top:3%;
-  border: none;
-  width:104.5%;
-  opacity:1!important;
-  height:0.1px;
-  color:#090909;
-  background-color:#090909;
-}
-.topic{
-  opacity:0.7;
-  left:0;
-  margin-left:0%;
-  text-decoration:none;
-  font-weight:bold;
-  font-size:12px;
-}
-.feed{
-  background-color:white;
-  border-color:transparent;
-  border-style: solid;
-  border-width:0.01px;
-  border-opacity:1;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  text-align: left;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 14px;
-  margin-left:25%;
-  margin-right:25%;
-  padding:0;
-  padding-top:0;
-  padding-bottom:100%;
-  height:100%;
-  top:0;
-  margin-top:-7%;
-  scroll-behavior:smooth!important;
-}
-body{
-  background-color: white;
-}
-h5{
-  color:#000000;
-  font-size:18px;
-  font-family: 'Open Sans', sans-serif;
-}
-h2{
-  margin-top:0;
-  color:#d1d1d1;
-  opacity:0.4;
-  font-family: 'Open Sans', sans-serif;
-}
-h4{
-  color:#000000;
-  font-size:18px;
-  font-family: 'Open Sans', sans-serif;
-  text-align:center;
-  opacity:0.7;
-}
-a{
-  text-decoration:none;
-  transition: all 0.2s ease;
-  
-}
-.mainfeed{
-  font-size:14px;
-  color:#BAC2C6;
-  font-weight:400;
-  margin-left:7.2%;
-  font-family: 'Open Sans', sans-serif;
-  margin-top:1%;
-  margin-bottom:1%;
-}
-p{
-  color:#BAC2C6;
-  font-size:13px;
-  text-align:left;
-  align:left;
-  margin-left:1%;
-  font-family: 'Open Sans', sans-serif;
-}
-
-/*NAVIGATION BAR CSS BEGINS*/
-.topnav {
-  background-color: #228B22; /*#2e79c0 */
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:94%;
-  overflow: hidden;
-  width:100%;
-  margin:0;
-  padding:0;
-  z-index:100;
-  transition: all .50s cubic-bezier(.570,0,.080,1);
-}
-.topnav--unpinned {
-  transform: translateY(-100%);
-}
-/* Style the links inside the navigation bar */
-.topnav a {
-  float: left;
-  color: #2a81ca;
-  text-align: center;
-  padding: 15px 15px;
-  text-decoration: none;
-  font-size: 24px;
-  text-align:right;
-}
-/* Change the color of links on hover */
-
-/*DROPDOWN CSS BEGINS */
-.dropdown {
-  position: relative;
-  display: block;
-  padding-right:0;
-}
-.dropdown-content {
-  display: block;
-  position: absolute;
-  background-color: transparent;
-  min-width: 160px;
-  z-index: 1;
-  padding-right:0;
-  text-align:right;
-  float:right;
-  margin-left:83.2%;
-}
-.dropdown-content a {
-  color:black;
-  font-size:16px;
-  font-family: 'Open Sans', sans-serif;
-  font-weight:bold;
-  padding: 15px 15px;
-  text-decoration: none;
-  display: inline;
-}
-
-
-
-
-.profile_pic{
-  position: relative;border-radius: 200px 200px 200px 200px;
-  -moz-border-radius: 200px 200px 200px 200px;
-  -webkit-border-radius: 200px 200px 200px 200px;
-  padding:0;
-  left:0;
-  margin-top:0;
-  align:left;
-  margin-right:0.5%;
-  float:left;
-  max-width:46px!important;
-  max-height:46px!important;
-  min-width:46px!important;
-  min-height:46px!important;
-  margin-left:-0.3%;
-  opacity:0.99!important;
-  cursor:pointer;
-  border: 0.01px solid transparent;
-  border-width:thin;
-  box-shadow: 0 0 8px 8px #0c0c0c outset;
-}
-.profile_pic_nav{
-  position: relative;
-  border-radius: 200px 200px 200px 200px;
-  -moz-border-radius: 200px 200px 200px 200px;
-  -webkit-border-radius: 200px 200px 200px 200px;
-  margin-right:8%;
-  margin-top:-8%;
-  float:right;
-  max-width:38px!important;
-  max-height:38px!important;
-  min-width:38px!important;
-  min-height:38px!important;
-  margin-left:0.7%;
-  opacity:1!important;
-  cursor:pointer;
-  box-shadow: 0 0 8px 8px #0c0c0c outset;
-}
-.header_profile_pic{
-  position: relative;border-radius: 200px 200px 200px 200px;
-  -moz-border-radius: 200px 200px 200px 200px;
-  -webkit-border-radius: 200px 200px 200px 200px;
-  left:0;
-  align:left;
-  margin-right:1%;
-  float:left;
-  max-width:46px!important;
-  max-height:46px!important;
-  min-width:46px!important;
-  min-height:46px!important;
-  margin-left:1.5%;
-  margin-top:-2%;
-  opacity:1!important;
-  cursor:pointer;
-  box-shadow: 0 0 8px 8px #0c0c0c outset;
-}
-i{
-  font-size:18px;
-  padding:0;
-}
-.save{
-  display:none;
-}
-.username{
-  margin-top:8%;
-}
-
-#menu{
-  color:white;
-  padding:0;
-}
-.post_pic{
-  position: relative;
-  display:block;
-  max-width:275px!important;
-  max-height:185px!important;
-  min-width:275px!important;
-  min-height:185px!important;
-  -webkit-border-radius: 9px;
-  -moz-border-radius: 9px;
-  border-radius: 9px;
-  margin-left:7%;
-  opacity:1!important;
-  cursor:pointer;
-  box-shadow:none;
-  border:none;
-  margin-bottom:0.55%;
-}
-
-html {
-scroll-behavior:smooth!important;
-font-family: 'Open Sans', sans-serif;
-}
-</style>
-<script>
-  $(document).ready(function(){
-      
-   
-   $("#Platform").click(function(){
-     $("#Platform").removeClass('notActive');
-     $("#Businesses").addClass('notActive');
-     $("#Drivers").addClass('notActive');
-     $("#Reviews").addClass('notActive');
-     $("#Contact").addClass('notActive'); 
-     $("#Businesses").removeClass('active');
-     $("#Drivers").removeClass('active');
-     $("#Reviews").removeClass('active');
-     $("#Contact").removeClass('active');
-     });
-
-     $("#Businesses").click(function(){
-     $("#Businesses").addClass('active');
-     $("#Businesses").removeClass('notActive');
-     $("#Platform").removeClass('active'); 
-     $("#Platform").addClass('notActive');
-     $("#Drivers").addClass('notActive');
-     $("#Reviews").addClass('notActive');
-     $("#Contact").addClass('notActive');
-     $("#Drivers").removeClass('active');
-     $("#Reviews").removeClass('active');
-     $("#Contact").removeClass('active');
-     });
-
-     $("#Drivers").click(function(){
-     $("#Drivers").addClass('active');
-     $("#Drivers").removeClass('notActive');
-     $("#Platform").addClass('notActive');
-     $("#Platform").removeClass('active');  
-     $("#Businesses").addClass('notActive');
-     $("#Reviews").addClass('notActive');
-     $("#Contact").addClass('notActive');
-     $("#Businesses").removeClass('active');
-     $("#Reviews").removeClass('active');
-     $("#Contact").removeClass('active');
-     });
-
-     $("#Reviews").click(function(){
-     $("#Reviews").addClass('active');
-     $("#Reviews").removeClass('notActive');
-     $("#Platform").addClass('notActive');
-     $("#Platform").removeClass('active');
-     $("#Drivers").addClass('notActive');
-     $("#Businesses").addClass('notActive');
-     $("#Contact").addClass('notActive'); 
-     $("#Businesses").removeClass('active');
-     $("#Drivers").removeClass('active');
-     $("#Contact").removeClass('active');
-     });
-
-     $("#Contact").click(function(){
-     $("#Contact").addClass('active');
-     $("#Contact").removeClass('notActive');
-     $("#Platform").addClass('notActive');
-     $("#Platform").removeClass('active');  
-     $("#Businesses").addClass('notActive');
-     $("#Reviews").addClass('notActive');
-     $("#Drivers").addClass('notActive');
-     $("#Businesses").addClass('notActive');
-     $("#Drivers").removeClass('active');
-     $("#Reviews").removeClass('active');
-     $("#Businesses").removeClass('active');
-     });
-     
-   
-   
-   
- });   
- 
-     
-   
-     
- </script>
-<script>
-var header = document.querySelector('.topnav');
-var headroom = new Headroom(header, {
-  "offset": 200,
-  "tolerance": 5,
-  "classes": {
-    "unpinned": "topnav--unpinned"
-  }
-});
-headroom.init(); 
-
-      
-$(document).ready(function(){
-  $("#starIcon").click(function(){
-    $('#starIcon').val() == "true"
-    if ($('#starIcon').val() == "true") {
-        location.reload();
-    }
-    else {
-          $('#starIcon').val("false");
-    }
-  });
-}); 
-
-$(document).ready(function(){
-  $("#sharedIcon").click(function(){
-    $('#sharedIcon').val() == "true"
-    if ($('#sharedIcon').val() == "true") {
-        location.reload();
-    }
-    else {
-          $('#sharedIcon').val("false");
-    }
-  });
-});
-
-
-$(".contentClick").click(function() {
-  window.location = $(this).find("a").attr("href"); 
-  return false;
-});
-
-
-    
-</script>
